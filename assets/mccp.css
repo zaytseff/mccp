@@ -1,0 +1,272 @@
+.currency-icon {
+  width: 48px;
+  height: 48px;
+  position: relative;
+}
+.icon-wrapper {
+  position: relative;
+}
+.test-currency img {
+  filter: grayscale();
+}
+
+.currency-label {
+  display: flex !important;
+  align-items: center;
+}
+.currency-label img {
+  margin-right: 16px;
+}
+
+select#mccp-currency {
+  width: 100%;
+  height: 2rem;
+}
+
+select#mccp option {
+  height: 2rem;
+}
+
+#mccp-payment {
+  text-align: center;
+  background-color: #f8f8f8;
+  padding: 25px 15px;
+}
+.mccp-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.825rem;
+  margin-bottom: 2rem;
+}
+.mccp-header span {
+  margin: 0 5px;
+}
+.payment-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mccp-qrcode {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.mccp-qrcode img{
+  border: 2px solid #ccc;
+  width: 225px;
+  height: 225px;
+  box-sizing: content-box;
+  padding: 0px;
+  margin: 10px;
+}
+
+.mccp-amount strong {
+  display: block;
+  padding: 5px 15px;
+  border: 1px solid #e5e5e5;
+  border-radius: 5px;
+  background-color: #eee;
+  margin: 0px 5px;
+  font-size: 1.2em;
+  width: 100%;
+  font-weight: 900;
+}
+.mccp-success {
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+.mccp-success span {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+.mccp-success::before {
+  content: '\f058';
+  display: block;
+  font-family: 'Font Awesome 5 Free';
+  font-size: 5rem;
+  line-height: 5.5rem;
+  color:#595;
+}
+
+.mccp-info {
+  padding: 25px 25px 15px;
+  margin: 15px;
+  border-top: 2px solid #ccc; 
+}
+.mccp-qrcode,
+.mccp-amount,
+.mccp-details,
+.mccp-transactions {
+  position: relative;
+  margin: 15px;
+  margin-top: 0px;
+}
+
+.mccp-details_item {
+  padding: 5px;
+  /* font-size: 1.2rem; */
+  border-bottom: 1px solid #f8f8f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.mccp-details__title {
+  font-size: 1.5rem;
+  border-bottom: 2px solid #ccc;
+}
+.mccp-label, .mccp-value {
+  width: 50%;
+  text-align: left;
+  padding: 0 8px;
+}
+.mccp-label {
+  text-align: right;
+}
+.mccp-value {
+  font-weight: 900;
+}
+.mccp-payment .mccp-transactions a.link {
+  /* font-weight: 600; */
+  color:  #6d6d6d;
+  margin-right: 15px;
+  text-decoration: none;
+}
+.mccp-payment .mccp-transactions a.link:hover {
+  text-decoration: underline;
+}
+.mccp-transactions ul {
+  padding: 0;
+  list-style-type: none;
+  margin: 0;
+}
+.loader-show {
+  display: flex !important;
+}
+/* Loader */
+.loader-wrapper {
+  position: absolute;
+  width: 100%;
+  height:100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left:0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  opacity: 0.5;
+}
+.mccp-loader {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+.mccp-loader:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid #aaa;
+  border-color: #ccc transparent #ccc transparent;
+  animation: mccp-loader 0.5s linear infinite;
+}
+@keyframes mccp-loader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.payment-details {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+.mccp-qrcode,
+.mccp-amount,
+.mccp-details,
+.mccp-transactions {
+  width: 50%;
+}
+@media screen and (max-width: 768px) {
+  .payment-info,
+  .payment-details {
+    flex-direction: column;
+  }
+  .mccp-qrcode,
+  .mccp-amount,
+  .mccp-details,
+  .mccp-transactions {
+    width: 100%;
+  }
+}
+.mccp-remains,
+.mccp-address {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.mccp-remains {
+  margin-bottom: 10px;
+}
+.mccp-amount {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.info-title {
+  font-size: 1.5rem;
+}
+.mccp-transactions strong {
+  font-weight: 900;
+}
+select#mccp_currency {
+  padding: 3px 5px;
+  width: 100%;
+}
+.copy2clipboard {
+  position: relative;
+}
+.mccp-address-link::after,
+.copy2clipboard::after {
+  display: inline-block;
+  content: "\f0c5";
+  font-family: 'Font Awesome 5 Free';
+  margin-left: 8px;
+  padding: 0;
+  color: #ccc;
+  cursor: pointer;
+  width: 1.2rem;
+  line-height: 1.2rem;
+  text-align: center;
+}
+.mccp-address-link:hover::after,
+.copy2clipboard:hover::after {
+  color:#888;
+}
+.copy2clipboard.copied::after {
+  content: "\f058";
+}
+
+a.copy2clipboard:active,
+a.copy2clipboard:focus,
+a.copy2clipboard:hover,
+a.mccp-address-link:active,
+a.mccp-address-link:focus,
+a.mccp-address-link:hover {
+  outline: none;
+}
+.mccp-address-link::after {
+  content: "\f0c1";
+}

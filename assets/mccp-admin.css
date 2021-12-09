@@ -1,0 +1,54 @@
+@import './mccp.css';
+
+.currency-icon {
+  width: 32px;
+  height: 32px;
+}
+@media only screen and (max-width: 782px){
+  table.form-table.mccp-settings label.currency-label .woocommerce-help-tip {
+    position: relative;
+    top: 4px;
+  }
+}
+
+.icon-wrapper {
+  height: 32px;
+}
+
+input::placeholder {
+  color: #ccc;
+
+}
+
+td.forminp > table {
+  margin-top: -16px !important;
+}
+
+.table-wrapper {
+  padding-left: 16px;
+  border-left: 3px solid #ccc;
+}
+
+input[type="checkbox"].currency-enabled {
+  margin: 6px;
+}
+
+.mccp-settings input.regular-input,
+.mccp-settings select {
+  width: 400px !important;
+}
+
+.mccp-settings .testnet-info {
+  color: #888;
+}
+.mccp-settings .testnet-info__message {
+  display: inline-block;
+  margin: 5px 0;
+  font-size: 12px;
+}
+.mccp-settings .not-valid {
+  color: red;
+}
+.mccp-settings .valid {
+  color: green
+}
