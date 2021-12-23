@@ -11,19 +11,6 @@ Author URI: https://github.com/zaytseff
 if (!defined('ABSPATH'))
   exit; // Exit if accessed directly
 
-if (!function_exists('pa')) {
-  function pa($mixed, $msg = false) {
-    echo '<pre>';
-    if ($msg)
-      echo $msg;
-    if (is_bool($mixed))
-      echo ($mixed) ? 'true' : 'false';
-    else 
-      print_r($mixed);
-    echo '</pre>';
-  }
-}
-
 require_once 'inc/config.php';
 require_once 'inc/class-trasaction.php';
 
@@ -131,7 +118,7 @@ function mccp_payment() {
     if (!$transaction->order)
       die ('*ok*');
 
-    echo $transaction->process();
+    echo esc_html( $transaction->process() );
 
     exit;
   }

@@ -173,19 +173,19 @@
               foreach($currencies as $currency): ?>
                 <tr valign="middle" class="single_select_page">
                   <th scope="row" class="titledesc">
-                    <label for="mccp_<?php echo $currency->abbr; ?>" class="currency-label">
+                    <label for="mccp_<?php echo esc_html( $currency->abbr ); ?>" class="currency-label">
                     <div class="<?php echo WC_MCCP::currency_icon_wrapper($currency) ?>">
-                      <img src="<?php echo WC_MCCP::currency_icon($currency->abbr); ?>" alt="<?php echo $currency->name; ?>" class="currency-icon">
+                      <img src="<?php echo WC_MCCP::currency_icon($currency->abbr); ?>" alt="<?php echo esc_html( $currency->name ); ?>" class="currency-icon">
                     </div>
-                    <?php echo $currency->name; ?>
+                    <?php echo esc_html( $currency->name ); ?>
                     <?php echo wc_help_tip(sprintf(__('Enter valid address to activate <b>%s</b> currency', 'mccp'), $currency->name)); ?>
                     </label>
                   </th>
                   <td class="forminp">
-                    <input type="text" name="woocommerce_mccp_currencies[<?php echo $currency->abbr; ?>][address]" class="input-text regular-input" 
-                      value="<?php echo $this->get_currency($currency)->address; ?>">
+                    <input type="text" name="woocommerce_mccp_currencies[<?php echo esc_html( $currency->abbr ); ?>][address]" class="input-text regular-input" 
+                      value="<?php echo esc_html( $this->get_currency($currency)->address ); ?>">
                     <?php if ( $this->is_currency($currency) && !empty($this->get_currency($currency)->address) ): ?>
-                    <input type="checkbox" name="woocommerce_mccp_currencies[<?php echo $currency->abbr; ?>][enabled]" class="currency-enabled" 
+                    <input type="checkbox" name="woocommerce_mccp_currencies[<?php echo esc_html( $currency->abbr ); ?>][enabled]" class="currency-enabled" 
                       <?php echo $this->get_currency($currency)->enabled ? ' checked' : ''; ?>
                       <?php echo !$this->get_currency($currency)->valid ? ' disabled' : ''; ?>
                     >
@@ -230,7 +230,7 @@
 
         foreach ($wallets->currencies as $item) {
           if (isset($_POST['woocommerce_mccp_currencies'][$item->abbr])) {
-            $_address = trim($_POST['woocommerce_mccp_currencies'][$item->abbr]['address']);
+            $_address = sanitize_text_field($_POST['woocommerce_mccp_currencies'][$item->abbr]['address']);
             $_enabled = isset($_POST['woocommerce_mccp_currencies'][$item->abbr]['enabled']) ? true : false;
 
             $currency = array();
@@ -272,7 +272,7 @@
             continue;
           }
 
-          $wc_status = $_POST['woocommerce_mccp_order_states'][ $mccp_status ];
+          $wc_status = esc_html( $_POST['woocommerce_mccp_order_states'][ $mccp_status ] );
 
           if (true === array_key_exists($wc_status, $wc_states)) {
             WC_MCCP::log('[Info] Updating order state ' . $mccp_status . ' to ' . $wc_status);
@@ -619,9 +619,9 @@
 
       <?php foreach ( $active_currencies as $currency ) : ?>
 
-        <option <?php echo !$currency['payable'] ? 'disabled' : ''; ?> value="<?php echo $currency['abbr']; ?>">
-          <?php echo $currency['name']; ?>:
-          <?php echo $currency['total']; ?>
+        <option <?php echo (!$currency['payable']) ? 'disabled' : ''; ?> value="<?php echo esc_html($currency['abbr']); ?>">
+          <?php echo esc_html($currency['name']); ?>:
+          <?php echo esc_html($currency['total']); ?>
         </option>
 
         <?php endforeach; ?>
@@ -664,7 +664,7 @@
         return _e("Payment method disabled", 'mccp');
 
       if ($this->is_available()) {
-        $crypto = array_key_exists('mccp_currency', $_GET) ? $_GET['mccp_currency'] : false;
+        $crypto = array_key_exists('mccp_currency', $_GET) ? esc_html($_GET['mccp_currency']) : false;
 
         if (!$crypto)
           return _e('Required param not exists', 'mccp');
@@ -730,7 +730,7 @@
             <img src="<?php echo WC_MCCP::currency_icon($crypto); ?>" class="currency-icon">
           </span>
           <span class="currency-name">
-            <?php echo $currency->name; ?>
+            <?php echo esc_html($currency->name); ?>
           </span>
         </div>
         <div class="payment-info">
@@ -744,14 +744,14 @@
             <div class="mccp-address">
               <span class="info-title"><?php _e('Transfer address', 'mccp'); ?></span>
               <strong>
-                <span class="copy2clipboard"><?php echo $input_address; ?></span>
-                <a class="mccp-address-link" href="<?php echo WC_MCCP::get_address_link($currency) . $input_address; ?>" target="_blank"></a>
+                <span class="copy2clipboard"><?php echo esc_html($input_address); ?></span>
+                <a class="mccp-address-link" href="<?php echo WC_MCCP::get_address_link($currency) . esc_html($input_address); ?>" target="_blank"></a>
               </strong>
             </div>
             <div class="mccp-remains">
-              <span class="info-title"><?php _e('Payment amount', 'mccp'); ?> (<?php echo strtoupper($crypto); ?>)</span>
+              <span class="info-title"><?php _e('Payment amount', 'mccp'); ?> (<?php echo strtoupper(esc_html($crypto)); ?>)</span>
               <strong>
-                <span class="copy2clipboard"><?php echo $remains; ?></span>
+                <span class="copy2clipboard"><?php echo esc_html($remains); ?></span>
               </strong>
             </div>
 
@@ -774,11 +774,11 @@
             <div class="mccp-details_item mccp-details__title"><?php _e('Payment details', 'mccp'); ?></div>
             <div class="mccp-details_item mccp-details__merchant">
               <div class="mccp-label"><?php _e('Merchant:', 'mccp'); ?></div>
-              <div class="mccp-value"><?php echo $merchant; ?></div>
+              <div class="mccp-value"><?php echo esc_html($merchant); ?></div>
             </div>
             <div class="mccp-details_item mccp-details__amount">
               <div class="mccp-label"><?php _e('Total amount:', 'mccp'); ?></div>
-              <div class="mccp-value"><?php echo $payment->crypto_total; ?></div>
+              <div class="mccp-value"><?php echo esc_html($payment->crypto_total); ?></div>
             </div>
             <div class="mccp-details_item mccp-details__date">
               <div class="mccp-label"><?php _e('Date:', 'mccp'); ?></div>
@@ -794,8 +794,8 @@
                 <li><strong><?php _e('Confirmed transactions', 'mccp'); ?></strong></li>
 
                 <?php foreach($payment->transactions as $_paid): ?>
-                <li><a href="<?php echo $link . $_paid->input_transaction_hash; ?>" target="_blank" class="link"><?php echo WC_MCCP::mask_transaction_hash($_paid->input_transaction_hash); ?></a>
-                  <strong><?php echo $_paid->value . ' ' . strtoupper($currency->abbr); ?></strong>
+                <li><a href="<?php echo esc_url_raw( $link . $_paid->input_transaction_hash ); ?>" target="_blank" class="link"><?php echo WC_MCCP::mask_transaction_hash($_paid->input_transaction_hash); ?></a>
+                  <strong><?php echo esc_html( $_paid->value . ' ' . strtoupper($currency->abbr) ); ?></strong>
                 </li>
                 <?php endforeach; ?>
 
@@ -804,8 +804,8 @@
                 <li><strong><?php _e('Pending transactions', 'mccp'); ?></strong></li>
 
                 <?php foreach($payment->network_transactions as $_pending): ?>
-                  <li><a href="<?php echo $link . $_pending->input_transaction_hash; ?>" target="_blank" class="link"><?php echo WC_MCCP::mask_transaction_hash($_pending->input_transaction_hash); ?></a>
-                  <strtong><?php echo $_pending->value . ' ' . strtoupper($currency->abbr); ?></strtong>
+                  <li><a href="<?php echo esc_url_raw( $link . $_pending->input_transaction_hash ); ?>" target="_blank" class="link"><?php echo WC_MCCP::mask_transaction_hash($_pending->input_transaction_hash); ?></a>
+                  <strtong><?php echo esc_html($_pending->value . ' ' . strtoupper($currency->abbr)); ?></strtong>
                 </li>
                 <?php endforeach; ?>
 
