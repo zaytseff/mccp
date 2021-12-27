@@ -847,7 +847,7 @@
           break;
       }
 
-      echo '<div class="receipt_info">' . $message . '</div>';
+      echo esc_html('<div class="receipt_info">' . $message . '</div>');
     }
 
     /**
