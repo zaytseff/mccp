@@ -110,7 +110,7 @@ class Transactions {
   public function init_incoming() {
     foreach($_GET as $key => $val) {
       if (property_exists($this, $key)) {
-        $this->set($key, $val);
+        $this->set($key, sanitize_text_field($val));
       }
     }
     try {

@@ -272,7 +272,7 @@
             continue;
           }
 
-          $wc_status = esc_html( $_POST['woocommerce_mccp_order_states'][ $mccp_status ] );
+          $wc_status = sanitize_text_field( $_POST['woocommerce_mccp_order_states'][ $mccp_status ] );
 
           if (true === array_key_exists($wc_status, $wc_states)) {
             WC_MCCP::log('[Info] Updating order state ' . $mccp_status . ' to ' . $wc_status);
@@ -643,7 +643,7 @@
       $redirect = get_permalink(wc_get_page_id('pay'));
       $redirect = add_query_arg('order', $order->id, $redirect);
       $redirect = add_query_arg('key', $order->order_key, $redirect);
-      $redirect = add_query_arg('mccp_currency', $_POST['mccp_currency'], $redirect);
+      $redirect = add_query_arg('mccp_currency', sanitize_text_field($_POST['mccp_currency']), $redirect);
 
       return array(
         'result'    => 'success',
@@ -664,7 +664,7 @@
         return _e("Payment method disabled", 'mccp');
 
       if ($this->is_available()) {
-        $crypto = array_key_exists('mccp_currency', $_GET) ? esc_html($_GET['mccp_currency']) : false;
+        $crypto = array_key_exists('mccp_currency', $_GET) ? sanitize_text_field($_GET['mccp_currency']) : false;
 
         if (!$crypto)
           return _e('Required param not exists', 'mccp');
