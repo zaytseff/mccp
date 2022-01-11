@@ -85,7 +85,7 @@ select#mccp option {
 .mccp-success::before {
   content: '\f058';
   display: block;
-  font-family: 'Font Awesome 5 Free';
+  font-family: 'Font Awesome 5 Free', 'Font Awesome', FontAwesome;
   font-size: 5rem;
   line-height: 5.5rem;
   color:#595;
@@ -242,7 +242,7 @@ select#mccp_currency {
 .copy2clipboard::after {
   display: inline-block;
   content: "\f0c5";
-  font-family: 'Font Awesome 5 Free';
+  font-family: 'Font Awesome 5 Free', 'Font Awesome', FontAwesome;
   margin-left: 8px;
   padding: 0;
   color: #ccc;
