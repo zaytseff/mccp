@@ -1,4 +1,4 @@
-== Multi Cripto Currency Payments ==
+== Multi CryptoCurrency Payments ==
 
 Contributors: zaytseff
 Requires PHP: 7.4
