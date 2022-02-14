@@ -3,7 +3,7 @@
 Contributors: zaytseff
 Tags: bitcoin, litecoin, dogecoin, bitcoin cash, BTC, LTC, BCH, Doge, plugin, forwarding, seamless, payment, cryptocurrency,Multi CryptoCurrency Payments,  accept BTC, accept LTC, accept BCH, accept Crypto
 Requires at least: 5.6
-Tested up to: 5.8
+Tested up to: 5.9
 Requires PHP: 7.0
 Stable tag: 1.0.0
 License: GPLv2 or later
