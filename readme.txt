@@ -44,6 +44,7 @@ Fill settings of your crypto addresses into Plugin Settings: WooCommerce > Setti
 * **API website:-** [https://apirone.com](https://apirone.com)	
 * **API docs:-** [https://apirone.com/docs/](https://apirone.com/docs/)	
 * **Privacy policy:-** [https://apirone.com/privacy-policy](https://apirone.com/privacy-policy)	
+* **Support:-** <support@apirone.com>	
 
 == Frequently Asked Questions ==
 #### I will get money in USD, EUR, CAD, JPY, RUR...?
