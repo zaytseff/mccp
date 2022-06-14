@@ -15,7 +15,7 @@ Requires at least WooCommerce: 4.0 Tested up to: 4.9.7 License: GPLv2 or later
 == Description ==
 Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.
 
-https://www.youtube.com/watch?v=fpiZSadZX5c
+https://www.youtube.com/watch?v=SKvp_K_FdDU
 
 **Key features:**
 
