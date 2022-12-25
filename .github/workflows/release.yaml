@@ -1,0 +1,38 @@
+name: 'Build and release'
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build artifacts
+        run: |
+          mkdir ./multi-crypto-currency-payments
+          cp -R -t ./multi-crypto-currency-payments ./assets ./inc LICENSE.txt mccp.php readme.txt
+          zip -r ./multi-crypto-currency-payments.zip ./multi-crypto-currency-payments
+          rm -rf ./multi-crypto-currency-payments
+
+      - name: Release
+        id: release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            multi-crypto-currency-payments.zip
+
+      - name: Build message
+        run: |
+          get_message()
+          {
+          cat <<EOF
+          Release ${{ github.repository }} has been created. Link: ${{ steps.release.outputs.url }}
+          EOF
+          }
+          
+          echo MESSAGE=$(get_message) >> $GITHUB_ENV

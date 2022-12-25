@@ -3,9 +3,9 @@
 Contributors: zaytseff
 Tags: bitcoin, litecoin, dogecoin, bitcoin cash, BTC, LTC, BCH, Doge, plugin, forwarding, seamless, payment, cryptocurrency,Multi CryptoCurrency Payments,  accept BTC, accept LTC, accept BCH, accept Crypto
 Requires at least: 5.6
-Tested up to: 5.9
+Tested up to: 6.1.1
 Requires PHP: 7.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,10 +41,10 @@ Click Install Now.
 Fill settings of your crypto addresses into Plugin Settings: WooCommerce > Settings > Payments > Multi CryptoCurrency Payments. Turn the "On" checkbox in the Plugin on the same setting page.
 
 == Third Party API & License Information ==	
-* **API website:-** [https://apirone.com](https://apirone.com)	
-* **API docs:-** [https://apirone.com/docs/](https://apirone.com/docs/)	
-* **Privacy policy:-** [https://apirone.com/privacy-policy](https://apirone.com/privacy-policy)	
-* **Support:-** <support@apirone.com>	
+* **API website: ** [https://apirone.com](https://apirone.com)	
+* **API docs: ** [https://apirone.com/docs/](https://apirone.com/docs/)	
+* **Privacy policy: ** [https://apirone.com/privacy-policy](https://apirone.com/privacy-policy)	
+* **Support: ** <support@apirone.com>	
 
 == Frequently Asked Questions ==
 #### I will get money in USD, EUR, CAD, JPY, RUR...?
@@ -77,5 +77,8 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 
 == Changelog ==
+= Version 1.1.0 | 25/12/2022 =
+- Add apirone invoices support.
+
 = Version 1.0.0 | 11/01/2022 =
 - First version of plugin is published.
