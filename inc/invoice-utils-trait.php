@@ -184,7 +184,7 @@ trait MCCP_Utils {
 	 * @return false|string
 	 */
 	function version() {
-		$settings = get_option('woocommerce_mccp_settings');
+		$settings = get_option('woocommerce_mccp_settings', array());
 		return array_key_exists('version', $settings) ? $settings['version'] : false;
 	}
 
