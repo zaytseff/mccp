@@ -182,6 +182,7 @@ trait MCCP_Admin {
 				'type' => 'currencies_list',
 				'description' => __('List of available cryptocurrencies processed by Apirone', 'mccp'),
 				'desc_tip' => true,
+				'default' => [],
 			),
 			'factor' => array(
 				'title' => __('Price adjustment factor', 'mccp'),
@@ -215,6 +216,22 @@ trait MCCP_Admin {
 			),
 		);
 	}
+	/**
+	* Save apirone currensies into options table
+	*/
+	public function validate_currencies_list_field($k, $v) {
+		$currencies = $this->mccp_currencies();
+
+		foreach ($currencies as $key => $value) {
+			if (!empty($value->address) && !$value->valid) {
+				$currencies[$key]->address = '';
+				$currencies[$key]->enabled = 0;
+				$currencies[$key]->valid = 0;
+			}
+		}
+		return $currencies;
+	}
+
 
 	/**
 	 * Return css-class for currency icon

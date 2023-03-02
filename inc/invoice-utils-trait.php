@@ -101,7 +101,7 @@ trait MCCP_Utils {
 	 * @return false|object
 	 */
 	public function get_mccp_currency($abbr) {
-		$currencies = $this->get_option('currencies');
+		$currencies = (array) $this->get_option('currencies');
 
 		if ( $currencies && array_key_exists($abbr, $currencies) ) {
 			return $currencies[$abbr];
@@ -132,9 +132,9 @@ trait MCCP_Utils {
 		}
 
 		$woo_currency = get_woocommerce_currency();
-
 		$active_currencies = array();
-		foreach ($this->get_option('currencies') as $item) {
+
+		foreach ((array) $this->get_option('currencies') as $item) {
 			if ($item->testnet === 1 && !current_user_can('manage_options')) {
 				continue;
 			}
@@ -197,6 +197,18 @@ trait MCCP_Utils {
 		if ($this->version() === false) {
 			$this->update_1_0_0__1_1_0();
 		}
+        if ($this->version() == '1.1.0') {
+            $this->upd_version('1.1.1');
+        }
+	}
+
+	/**
+	 * Update plugin version only
+	 *
+	 * @return void 
+	 */	
+	function upd_version($version) {
+		$this->update_option('version', $version);
 	}
 
 	/**
@@ -226,7 +238,7 @@ trait MCCP_Utils {
 		// Map old currensies
 		foreach (Apirone::currencyList() as $apirone_currency) {
 			$currency = $this->mccp_currency($apirone_currency, $apirone_account);
-			if (array_key_exists($apirone_currency->abbr, $settings['currencies'])) {
+			if (array_key_exists($apirone_currency->abbr, (array) $settings['currencies'])) {
 				$old_currency = $settings['currencies'][$apirone_currency->abbr];
 				if ($old_currency['address']) {
 					$currency->address = $old_currency['address'];
