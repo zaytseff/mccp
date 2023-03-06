@@ -39,7 +39,6 @@ trait MCCP_Admin {
 	* @return void 
 	*/
 	public function admin_options() {
-		$this->update();
 		$this->mccp_init_form_fields();
 		if ( Apirone::isFiatSupported(get_option('woocommerce_currency')) ) :?>
 			<h3><?php _e('Multi Crypto Currency Payment Gateway', 'mccp'); ?></h3>
@@ -245,7 +244,7 @@ trait MCCP_Admin {
 
 	public function mccp_currency($apirone_currency, $apirone_account = false) {
 			$currency = $this->get_mccp_currency($apirone_currency->abbr);
-			if ($currency == false || !property_exists($currency, 'name')) {
+			if ($currency == false || gettype($currency) === 'array' || !property_exists($currency, 'name')) {
 				$currency = new \stdClass();
 
 				$currency->name = $apirone_currency->name;
@@ -260,7 +259,9 @@ trait MCCP_Admin {
 
 			// Set address from config 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST' && $apirone_account) {
-				$currency->enabled = sanitize_text_field($_POST['woocommerce_mccp_currencies'][$currency->abbr]['enabled']);
+				if (array_key_exists('enabled', $_POST['woocommerce_mccp_currencies'][$currency->abbr])) {
+					$currency->enabled = sanitize_text_field($_POST['woocommerce_mccp_currencies'][$currency->abbr]['enabled']);
+				}
 				$currency->address = sanitize_text_field($_POST['woocommerce_mccp_currencies'][$currency->abbr]['address']);
 				if ($currency->address != '') {
 					$result = Apirone::setTransferAddress($apirone_account, $apirone_currency->abbr, $currency->address);

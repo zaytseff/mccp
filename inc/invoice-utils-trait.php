@@ -189,26 +189,36 @@ trait MCCP_Utils {
 	}
 
 	/**
+	 * Update plugin version only
+	 *
+	 * @return void 
+	 */	
+	function upd_version($new) {
+		$settings = get_option('woocommerce_mccp_settings');
+		$settings['version'] = $new;
+
+		update_option('woocommerce_mccp_settings', $settings);
+	}
+
+	/**
 	 * Plugin version update entry point
 	 *
 	 * @return void 
 	 */
 	function update() {
-		if ($this->version() === false) {
-			$this->update_1_0_0__1_1_0();
-		}
-        if ($this->version() == '1.1.0') {
-            $this->upd_version('1.1.1');
-        }
+		$this->update_1_0_0__1_1_0();
+		$this->update_1_1_0__1_1_1();
 	}
 
 	/**
-	 * Update plugin version only
+	 * Update plugin from 1.1.0 to 1.1.1
 	 *
 	 * @return void 
-	 */	
-	function upd_version($version) {
-		$this->update_option('version', $version);
+	 */
+	function update_1_1_0__1_1_1() {
+		if ($this->version() === '1.1.0') {
+			$this->upd_version('1.1.1');
+		}
 	}
 
 	/**
@@ -217,6 +227,9 @@ trait MCCP_Utils {
 	 * @return void 
 	 */
 	function update_1_0_0__1_1_0() {
+		if ($this->version() !== false) {
+			return;
+		}
 		global $wpdb, $table_prefix;
 
 		// Table update when plugin aleady installed & active
@@ -234,36 +247,46 @@ trait MCCP_Utils {
 			return;
 
 		$apirone_account = $this->mccp_account();
-		
+
 		// Map old currensies
 		foreach (Apirone::currencyList() as $apirone_currency) {
 			$currency = $this->mccp_currency($apirone_currency, $apirone_account);
 			if (array_key_exists($apirone_currency->abbr, (array) $settings['currencies'])) {
 				$old_currency = $settings['currencies'][$apirone_currency->abbr];
-				if ($old_currency['address']) {
-					$currency->address = $old_currency['address'];
-					$result = Apirone::setTransferAddress($apirone_account, $currency->abbr, $old_currency['address']);
-					if ($result) {
-						$currency->valid = 1;
+				if (gettype($old_currency) === 'array') { // Update from version 1.0.0
+					if ($old_currency['address']) {
+						$currency->address = $old_currency['address'];
+						$result = Apirone::setTransferAddress($apirone_account, $currency->abbr, $old_currency['address']);
+						if ($result) {
+							$currency->valid = 1;
+						}
 					}
+					$currency->enabled = ($old_currency['enabled']) ? 1 : 0;
 				}
-				$currency->enabled = ($old_currency['enabled']) ? 1 : 0;
+				else { // Clear install of 1.1.1
+					$currency = $old_currency;
+				}
 			}
-
 			$mccp_currencies[$apirone_currency->abbr] = $currency;
 
 		}
 		// Update currensies
 		$settings['currencies'] = $mccp_currencies;
-		// Add version
+		// Add new params
+		$settings['factor'] = '1';
+		$settings['timeout'] = '1800';
+		$settings['check_timeout'] = '10';
+		$settings['backlink'] = '';
+		$settings['apirone_logo'] = 'yes';
 		$settings['version'] = '1.1.0';
+		
 		// Unset unused
 		unset($settings['count_confirmations']);
 		unset($settings['debug']);
 		unset($settings['wallets']);
 		unset($settings['statuses']);
 
-		update_option('woocommerce_mccp_settings', $settings);		
+		update_option('woocommerce_mccp_settings', $settings);
+		delete_option('woocommerce_mccp_wallets');
 	}
-
 }

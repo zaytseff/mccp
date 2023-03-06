@@ -16,7 +16,6 @@ use ApironeApi\Payment;
 require_once('inc/apirone_api/Apirone.php');
 require_once('inc/apirone_api/Payment.php');
 
-define('PLUGIN_VERSION', '1.1.0');
 define('MCCP_ROOT', __DIR__);
 define('MCCP_MAIN', __FILE__);
 define('MCCP_URL', plugin_dir_url(__FILE__));
