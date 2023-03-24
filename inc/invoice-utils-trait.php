@@ -2,6 +2,7 @@
 
 use ApironeApi\Apirone;
 use ApironeApi\Db;
+use ApironeApi\Request;
 
 require_once('invoice-db-trait.php');
 require_once('apirone_api/Apirone.php');
@@ -208,6 +209,34 @@ trait MCCP_Utils {
 	function update() {
 		$this->update_1_0_0__1_1_0();
 		$this->update_1_1_0__1_1_1();
+		$this->update_1_1_1__1_2_0();
+	}
+
+	/**
+	 * Update plugin from 1.1.0 to 1.1.1
+	 * Fee plan update to percentage
+	 * @return void 
+	 */
+	function update_1_1_1__1_2_0() {
+		if ($this->version() !== '1.1.1') {
+			return;
+		}
+		
+		$settings = get_option('woocommerce_mccp_settings');
+		if ( !$settings ) {
+			return;
+		}
+		$account = $this->mccp_account();
+		$endpoint = '/v2/accounts/' . $account->account;
+
+		foreach ($settings['currencies'] as $currency) {
+			$params['transfer-key'] = $account->{'transfer-key'};
+			$params['currency'] = $currency->abbr;
+			$params['processing-fee-policy'] = 'percentage';
+			
+			Request::execute('patch', $endpoint, $params, true);
+		}
+		$this->upd_version('1.2.0');
 	}
 
 	/**

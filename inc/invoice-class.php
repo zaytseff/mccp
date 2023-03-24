@@ -3,7 +3,6 @@
 
 use ApironeApi\Apirone;
 use ApironeApi\Payment;
-use WC_MCCP as GlobalWC_MCCP;
 
 require_once('invoice-db-trait.php');
 require_once('invoice-utils-trait.php');

@@ -76,6 +76,9 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog ##
 
+= Version 1.2.0 | 24/03/2023 =
+- The plugin is switched to a new fee plan.
+  Now the fee is not fixed but charged in amount of 1% of the transfer.
 ### Version 1.1.1 | 09/03/2023 ###
 - Fix installation errors on php-8.x version.
 - Fix update from 1.0.0 on php-8.x
