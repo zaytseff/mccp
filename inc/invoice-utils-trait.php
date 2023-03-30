@@ -210,10 +210,23 @@ trait MCCP_Utils {
 		$this->update_1_0_0__1_1_0();
 		$this->update_1_1_0__1_1_1();
 		$this->update_1_1_1__1_2_0();
+		$this->update_1_2_0__1_2_1();
 	}
 
+	
 	/**
-	 * Update plugin from 1.1.0 to 1.1.1
+	 * Update plugin from 1.2.0 to 1.2.1
+	 * Add a message when the invoice isn't created/found.
+	 * @return void 
+	 */
+	function update_1_2_0__1_2_1() {
+		if ($this->version() !== '1.2.0') {
+			return;
+		}
+		$this->upd_version('1.2.1');
+	}
+	/**
+	 * Update plugin from 1.1.1 to 1.2.0
 	 * Fee plan update to percentage
 	 * @return void 
 	 */

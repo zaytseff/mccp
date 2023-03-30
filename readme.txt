@@ -5,12 +5,12 @@ Tags: bitcoin, litecoin, dogecoin, bitcoin cash, BTC, LTC, BCH, Doge, plugin, fo
 Requires at least: 5.6
 Tested up to: 6.1.1
 Requires PHP: 7.0
-Stable tag: 1.1.1
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Woocommerce plugin - Multi CryptoCurrency Payments
-Requires at least WooCommerce: 4.0 Tested up to: 7.4 License: GPLv2 or later
+Requires at least WooCommerce: 4.0 Tested up to: 7.5.1 License: GPLv2 or later
 
 == Description ==
 Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.
@@ -77,6 +77,9 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 
 == Changelog ==
+= Version 1.2.1 | 30/03/2023 =
+- Add a message when the invoice isn't created/found.
+
 = Version 1.2.0 | 24/03/2023 =
 - The plugin is switched to a new fee plan.
   Now the fee is not fixed but charged in amount of 1% of the transfer.

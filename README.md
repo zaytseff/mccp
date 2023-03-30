@@ -65,7 +65,7 @@ Bitcoin protocol has no refunds, chargebacks, or transaction cancellations.
 Only the store manager takes a decision of underpaid or overpaid orders.
 Cancel and return the rest amount directly to the customers.
 
-**Do the Plugin support native Bitcoin Segwit ("bc1") addresses?*
+**Do the Plugin support native Bitcoin Segwit ("bc1") addresses?**
 >Yes. Sure.
 
 **I would like to accept Litecoin only. What should I do?**
@@ -74,19 +74,28 @@ Cancel and return the rest amount directly to the customers.
 **Fee**
 >The plugin uses the free Rest API of the Apirone crypto payment gateway. The pricing page [https://apirone.com/pricing](https://apirone.com/pricing)
 
-## Changelog ##
+## Changelog
 
-= Version 1.2.0 | 24/03/2023 =
-- The plugin is switched to a new fee plan.
+### Version 1.2.1 | 30/03/2023
+
+* Add a message when the invoice isn't created/found.
+
+### Version 1.2.0 | 24/03/2023
+
+* The plugin is switched to a new fee plan.
   Now the fee is not fixed but charged in amount of 1% of the transfer.
-### Version 1.1.1 | 09/03/2023 ###
-- Fix installation errors on php-8.x version.
-- Fix update from 1.0.0 on php-8.x
-- Improve new installation (without plugin update)
-- Improve update logic
 
-### Version 1.1.0 | 25/12/2022 ###
-- Add apirone invoices support.
+### Version 1.1.1 | 09/03/2023
 
-### Version 1.0.0 | 11/01/2022 ###
-- First version of plugin is published.
+* Fix installation errors on php-8.x version.
+* Fix update from 1.0.0 on php-8.x
+* Improve new installation (without plugin update)
+* Improve update logic
+
+### Version 1.1.0 | 25/12/2022
+
+* Add apirone invoices support.
+
+### Version 1.0.0 | 11/01/2022
+
+* First version of plugin is published.
