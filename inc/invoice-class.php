@@ -221,16 +221,19 @@ class WC_MCCP extends WC_Payment_Gateway {
 				$order_invoice = $this->invoice_update($order, $created);
 			}
 		}
+		WC()->cart->empty_cart();
+
+		if (!$order_invoice) {
+			?>
+			<h2>Oops! Something went wrong.</h2>
+			<p>Please, try again or choose another payment method.</p>
+			<p><a href="<?php echo esc_url( $order->get_checkout_payment_url() ); ?>" class="button pay"><?php esc_html_e( 'Pay', 'woocommerce' ); ?></a></p>
+			<?php
+
+			return;		
+		}
+		
 		$currencyInfo = Apirone::getCurrency($order_invoice->details->currency);
-
-		switch ($order_invoice->status) {
-			case 'paid':
-			case 'overpaid':
-			case 'expired':
-				WC()->cart->empty_cart();
-				break;
-		} 
-
 		$this->invoice_show($order_invoice, $currencyInfo);
 	}
 
