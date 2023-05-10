@@ -491,22 +491,24 @@ p.merchant > span {
     font-size: .5rem;
 }
 @media screen and (max-width: 540px) {
-    .info {
+    #mccp-payment .info {
         margin-left: unset;
     }
-    .info__title {
+    #mccp-payment .info__title {
         font-size: 2rem;
     }
-    .invoice__info {
+    #mccp-payment .invoice__info {
         flex-direction: column-reverse;
+        align-items: flex-start;
     }
-    .qr__wrapper {
+    #mccp-payment .qr__wrapper {
         align-self: center;
+        margin-top: 1rem;
     }
-    .mccp-payment {
+    #mccp-payment .mccp-payment {
         padding: 0;
     }
-    .mccp-logo-wrapper {
+    #mccp-payment .mccp-logo-wrapper {
         flex-direction: column;
     }
 }

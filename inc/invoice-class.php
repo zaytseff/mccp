@@ -221,7 +221,14 @@ class WC_MCCP extends WC_Payment_Gateway {
 				$order_invoice = $this->invoice_update($order, $created);
 			}
 		}
-		WC()->cart->empty_cart();
+		// WC()->cart->empty_cart();
+		switch ($order_invoice->status) {
+			case 'paid':
+			case 'overpaid':
+			case 'expired':
+				WC()->cart->empty_cart();
+				break;
+		} 
 
 		if (!$order_invoice) {
 			?>

@@ -76,6 +76,11 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
+### Version 1.2.2 | 10/05/2023
+
+* Fix mobile layout.
+* Clear cart after success or expired payment.
+
 ### Version 1.2.1 | 30/03/2023
 
 * Add a message when the invoice isn't created/found.

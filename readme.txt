@@ -77,6 +77,10 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 
 == Changelog ==
+= Version 1.2.2 | 10/05/2023 =
+- Fix mobile layout.
+- Clear cart after success or expired payment.
+
 = Version 1.2.1 | 30/03/2023 =
 - Add a message when the invoice isn't created/found.
 
