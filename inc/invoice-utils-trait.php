@@ -143,7 +143,7 @@ trait MCCP_Utils {
 			if (!empty($item->address) && $item->enabled && $item->valid) {
 				$currency = array();
 
-				$crypto_total = $this->get_crypto_total($total, $woo_currency, $item->abbr);
+				$crypto_total = Apirone::exp2dec($this->get_crypto_total($total, $woo_currency, $item->abbr), 0);
 
 				$currency['abbr'] = $item->abbr;
 				$currency['name'] = $item->name;

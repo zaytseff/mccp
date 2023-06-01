@@ -45,7 +45,6 @@ class WC_MCCP extends WC_Payment_Gateway {
 		$this->currencies = $this->get_option('currencies');
 
 		add_action('woocommerce_receipt_mccp', array( $this, 'invoice_receipt' ));
-		add_action('woocommerce_thankyou_mccp', array( $this, 'invoice_receipt' ));
 
 		//Save our GW Options into Woocommerce
 		add_action('woocommerce_update_options_payment_gateways_mccp', array($this, 'process_admin_options'));
@@ -182,7 +181,7 @@ class WC_MCCP extends WC_Payment_Gateway {
 		
 		$invoices_list=  $this->get_order_invoices($order_id);
 		$order_invoice = is_array($invoices_list) ? $invoices_list[0] : false;
-		
+
 		// Process failed order_pay
 		if ( $this->is_repayment() && ! isset($_GET['invoice'])) {
 			if ($order_invoice && $order_invoice->status == 'expired' && $order->get_status() === 'failed') {
@@ -221,14 +220,6 @@ class WC_MCCP extends WC_Payment_Gateway {
 				$order_invoice = $this->invoice_update($order, $created);
 			}
 		}
-		// WC()->cart->empty_cart();
-		switch ($order_invoice->status) {
-			case 'paid':
-			case 'overpaid':
-			case 'expired':
-				WC()->cart->empty_cart();
-				break;
-		} 
 
 		if (!$order_invoice) {
 			?>
@@ -239,9 +230,16 @@ class WC_MCCP extends WC_Payment_Gateway {
 
 			return;		
 		}
-		
+        
+        if (!$this->is_repayment() && ($order_invoice->status === 'completed' || $order_invoice->status === 'expired')) {
+			WC()->cart->empty_cart();
+        }
 		$currencyInfo = Apirone::getCurrency($order_invoice->details->currency);
 		$this->invoice_show($order_invoice, $currencyInfo);
+
+        if ($order_invoice->status == 'expired' && $order->get_status() === 'failed') {
+            wc_get_template( 'checkout/thankyou.php', array( 'order' => $order ) );
+        }
 	}
 
 	function invoice_create($order, $crypto_abbr, $crypto_total) {
