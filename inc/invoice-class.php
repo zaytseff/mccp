@@ -45,6 +45,7 @@ class WC_MCCP extends WC_Payment_Gateway {
 		$this->currencies = $this->get_option('currencies');
 
 		add_action('woocommerce_receipt_mccp', array( $this, 'invoice_receipt' ));
+		add_action('before_woocommerce_pay', array( $this, 'order_pay_success_redirect' ));
 
 		//Save our GW Options into Woocommerce
 		add_action('woocommerce_update_options_payment_gateways_mccp', array($this, 'process_admin_options'));
@@ -140,6 +141,35 @@ class WC_MCCP extends WC_Payment_Gateway {
 		}
 		exit;
 	}
+
+    function order_pay_success_redirect() {
+        global $wp;
+        if (isset($_GET['order_pay']) && isset($_GET['key'])) {
+            $order_id = $wp->query_vars['order_pay'];
+            $order_key = isset( $_GET['key'] ) ? wc_clean( wp_unslash( $_GET['key'] ) ) : ''; // WPCS: input var ok, CSRF ok.
+            $order     = wc_get_order( $order_id );
+            if (!$order || $order->get_payment_method() !== 'mccp') {
+                return;
+            }
+
+		    $invoices_list=  $this->get_order_invoices($order_id);
+		    $order_invoice = is_array($invoices_list) ? $invoices_list[0] : false;
+
+            if ($order->status !== 'pending' && $order_invoice && $order_invoice->status == 'completed') {
+                // Make redirect to order_reseived
+                $args = array(
+                    'order-received' => $order->id,
+                    'key' => $order->order_key,
+                    // 'mccp_currency' => $crypto_abbr,
+                    // 'invoice' => $created->invoice,
+                );
+
+                $url = add_query_arg($args, get_permalink(wc_get_page_id('pay')));
+                wp_redirect($url); // Redirect to payment page
+                exit();
+            }
+        }
+    }
 
 	/**
 	 * Invoice page handler

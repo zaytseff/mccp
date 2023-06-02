@@ -212,8 +212,21 @@ trait MCCP_Utils {
 		$this->update_1_1_1__1_2_0();
 		$this->update_1_2_0__1_2_1();
 		$this->update_1_2_1__1_2_2();
+		$this->update_1_2_2__1_2_3();
 	}
 	
+	/**
+	 * Update plugin from 1.2.1 to 1.2.2
+	 * Fix mobile layout
+	 * @return void 
+	 */
+	function update_1_2_2__1_2_3() {
+		if ($this->version() !== '1.2.2') {
+			return;
+		}
+		$this->upd_version('1.2.3');
+	}
+
 	/**
 	 * Update plugin from 1.2.1 to 1.2.2
 	 * Fix mobile layout

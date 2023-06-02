@@ -76,6 +76,12 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
+### Version 1.2.3 | 02/06/2023 
+
+* Fix checkout process for guests & registred users
+* Add redirect to thank you page and support downloadable products
+* Minor design fixes
+
 ### Version 1.2.2 | 10/05/2023
 
 * Fix mobile layout.
