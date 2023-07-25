@@ -76,11 +76,10 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
-### Version 1.2.3 | 02/06/2023 
+### Version 1.2.4 | 25/07/2023 
 
-* Fix checkout process for guests & registred users
-* Add redirect to thank you page and support downloadable products
-* Minor design fixes
+* Add debug mode
+* Add woocommerce logs for errors & debug
 
 ### Version 1.2.2 | 10/05/2023
 

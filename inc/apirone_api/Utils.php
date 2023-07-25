@@ -78,7 +78,7 @@ trait Utils {
     }
 
     /**
-     * Convert fiat value to cripto by request to apirone api
+     * Convert fiat value to crypto by request to apirone api
      * 
      * @param mixed $value 
      * @param string $from 
@@ -98,7 +98,7 @@ trait Utils {
         $result = Request::execute('get', $endpoint, $params );
 
         if (Request::isResponseError($result)) {
-            Log::debug($result);
+            // LoggerWrapper::error($result);
             return false;
         }
         else

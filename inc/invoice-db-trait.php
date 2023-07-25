@@ -1,6 +1,7 @@
 <?php
 
 use ApironeApi\Apirone;
+use ApironeApi\LoggerWrapper;
 
 trait MCCP_Db {
 
@@ -23,6 +24,10 @@ trait MCCP_Db {
 			return json_decode(json_encode($result));
 		}
 
+        if($wpdb->last_error !== '') {
+            LoggerWrapper::error($wpdb->last_error);
+        }
+
 		return false;	
 	}
 
@@ -36,6 +41,7 @@ trait MCCP_Db {
 		global $wpdb, $table_prefix;
 
 		$result = $wpdb->get_results(\ApironeApi\Db::getInvoiceQuery($invoice_id, $table_prefix), ARRAY_A);
+
 		if ($result) {
 			$invoice = $result[0];
 			$invoice['details'] = json_decode($invoice['details']);
@@ -43,6 +49,9 @@ trait MCCP_Db {
 			
 			return json_decode(json_encode($invoice));
 		}
+        if($wpdb->last_error !== '') {
+            LoggerWrapper::error($wpdb->last_error);
+        }
 
 		return false;	
 	}
@@ -85,6 +94,10 @@ trait MCCP_Db {
 
 			return $savedInvoice;
 		}
+
+        if($wpdb->last_error !== '') {
+            LoggerWrapper::error($wpdb->last_error);
+        }
 
 		return false;
     }
@@ -161,6 +174,10 @@ trait MCCP_Db {
 			return $meta;
 		}
 
+        if($wpdb->last_error !== '') {
+            LoggerWrapper::error($wpdb->last_error);
+        }
+
 		return $result;
 	}
 
@@ -192,6 +209,10 @@ trait MCCP_Db {
 		if ($result) {
 			return $meta;
 		}
+
+        if($wpdb->last_error !== '') {
+            LoggerWrapper::error($wpdb->last_error);
+        }
 
 		return $result;
 	

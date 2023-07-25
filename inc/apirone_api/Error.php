@@ -29,4 +29,10 @@ class Error {
         return (!empty($this->errors)) ? true : false;
     }
 
+    public function __toString()
+    {
+        // return (!empty($this->errors)) ? print_r(json_decode(json_encode($this, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK), true), true) : '';
+        return (!empty($this->errors)) ? print_r((array)$this, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK) : '';
+    }
+
 }

@@ -5,7 +5,7 @@ Tags: bitcoin, litecoin, dogecoin, bitcoin cash, BTC, LTC, BCH, Doge, plugin, fo
 Requires at least: 5.6
 Tested up to: 6.2.2
 Requires PHP: 7.0
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,10 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 
 == Changelog ==
+= Version 1.2.4 | 25/07/2023 =
+- Add debug mode
+- Add woocommerce logs for errors & debug
+
 = Version 1.2.3 | 02/06/2023 =
 - Fix checkout process for guests & registred users
 - Add redirect to thank you page and support downloadable products

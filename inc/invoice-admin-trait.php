@@ -213,6 +213,14 @@ trait MCCP_Admin {
 				'label' => __('Show Apirone logo on invoice page', 'mccp'),
 				'default' => 'yes',
 			),
+			'debug' => array(
+				'title' => __('Debug mode', 'mccp'),
+				'type' => 'checkbox',
+				'label' => __('On', 'mccp'),
+				'default' => 'no',
+				'description' => __('Write debug information into log file', 'mccp'),
+				'desc_tip' => true,
+			),
 		);
 	}
 	/**

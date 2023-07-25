@@ -44,6 +44,10 @@ class WC_MCCP extends WC_Payment_Gateway {
 		$this->enabled = $this->get_option('enabled');
 		$this->currencies = $this->get_option('currencies');
 
+        $debug = $this->get_option('debug') == 'yes' ? true : false;
+
+        Apirone::setLogger(new \WC_Logger(), $debug);
+
 		add_action('woocommerce_receipt_mccp', array( $this, 'invoice_receipt' ));
 		add_action('before_woocommerce_pay', array( $this, 'order_pay_success_redirect' ));
 
