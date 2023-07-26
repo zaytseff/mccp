@@ -98,7 +98,6 @@ trait Utils {
         $result = Request::execute('get', $endpoint, $params );
 
         if (Request::isResponseError($result)) {
-            // LoggerWrapper::error($result);
             return false;
         }
         else

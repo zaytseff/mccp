@@ -3,8 +3,10 @@
 namespace ApironeApi;
 
 require_once (__DIR__ . '/Error.php');
+require_once (__DIR__ . '/LoggerWrapper.php');
 
 use ApironeApi\Error;
+use ApironeApi\LoggerWrapper;
 
 class Request {
     const API_URL = 'https://apirone.com/api';
@@ -12,7 +14,7 @@ class Request {
 
     public static function execute($method, $url, $params = array(), $json = false)
     {
-        $error = new \ApironeApi\Error();
+        $error = new Error();
 
         if ($method && $url) {
             $curl_options = array(
@@ -73,7 +75,12 @@ class Request {
                 $error->add($info['http_code'], $body, json_encode($info));
             }
             if ($error->hasError()){
+                LoggerWrapper::error($error->__toString());
                 return $error;
+            }
+            if (LoggerWrapper::$debugMode) {
+                $debugInfo = array('url' => $url, 'method' => $method, 'params' => $params, 'curl_info' => $info, 'response' => $body);
+                LoggerWrapper::debug(print_r($debugInfo, true));
             }
 
             return $body;

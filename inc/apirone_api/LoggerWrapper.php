@@ -21,13 +21,20 @@ class LoggerWrapper {
     public static function debug($message)
     {
         if (self::$debugMode) {
-            self::log('debug', $message, ['source' => 'mccp_debug']);
+            self::log('debug', $message , ['source' => 'mccp_debug']);
         }
     }
 
     public static function error($message)
     {
-        self::log('error', $message, ['source' => 'mccp_debug']);
+        self::log('error', $message, ['source' => 'mccp_error']);
+    }
+
+    public static function callbackError($message)
+    {
+        $error = sprintf('Callback request from %s with error: %s', $_SERVER['REMOTE_ADDR'] , $message);
+
+        self::error($error);
     }
 
     /**

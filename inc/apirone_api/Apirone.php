@@ -119,10 +119,8 @@ class Apirone {
         $result = Request::execute('get', $endpoint);
 
         if (Request::isResponseError($result)) {
-            LoggerWrapper::error($result);
             return false;
         }
-        LoggerWrapper::debug($result);
 
         return json_decode($result);
     }
@@ -138,10 +136,8 @@ class Apirone {
         $result = Request::execute('options', $endpoint);
 
         if (Request::isResponseError($result)) {
-            LoggerWrapper::error($result);
             return false;
         }
-        LoggerWrapper::debug($result);
 
         return json_decode($result);
     }
@@ -156,10 +152,8 @@ class Apirone {
         $result = Request::execute('post', $endpoint);
 
         if (Request::isResponseError($result)) {
-            LoggerWrapper::error($result);
             return false;
         }
-        LoggerWrapper::debug($result);
 
         return json_decode($result);
     }
@@ -177,10 +171,8 @@ class Apirone {
         $result = Request::execute('get', $endpoint, $params);
 
         if (Request::isResponseError($result)) {
-            LoggerWrapper::error($result);
             return false;
         }
-        LoggerWrapper::debug($result);
 
         return json_decode($result);
     }
@@ -195,10 +187,8 @@ class Apirone {
 
         $result = Request::execute('patch', $endpoint, json_encode($params), true);
         if (Request::isResponseError($result)) {
-            LoggerWrapper::error($result);
             return false;
         }
-        LoggerWrapper::debug($result);
 
         return json_decode($result);
     }
@@ -217,11 +207,9 @@ class Apirone {
         $result = Request::execute('post', $endpoint, json_encode($invoiceData), true);
 
         if (Request::isResponseError($result)) {
-            LoggerWrapper::error($result);
             return $result;
         }
         else
-        LoggerWrapper::debug($result);
 
         return json_decode($result);
     }
@@ -231,10 +219,8 @@ class Apirone {
         $result = Request::execute('get', $endpoint);
 
         if (Request::isResponseError($result)) {
-            LoggerWrapper::error($result);
             return false;
         }
-        LoggerWrapper::debug($result);
 
         return json_decode($result);
 

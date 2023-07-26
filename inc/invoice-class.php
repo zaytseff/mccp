@@ -3,6 +3,7 @@
 
 use ApironeApi\Apirone;
 use ApironeApi\Payment;
+use ApironeApi\LoggerWrapper;
 
 require_once('invoice-db-trait.php');
 require_once('invoice-utils-trait.php');
@@ -88,19 +89,22 @@ class WC_MCCP extends WC_Payment_Gateway {
 	 * @return never 
 	 */
 	function mccp_callback_handler () {
-
         $data = file_get_contents('php://input');
         if($data) {
             $params = json_decode(sanitize_text_field($data));
         }
 
         if (!$params) {
-            wp_send_json("Data not received", 400);
+            $msg = 'Data not received';
+            LoggerWrapper::callbackError($msg);
+            wp_send_json($msg, 400);
             return;
         }
 
         if (!property_exists($params, 'invoice') || !property_exists($params, 'status')) {
-            wp_send_json("Wrong params received: " . json_encode($params), 400);
+            $msg = "Wrong params received: " . json_encode($params);
+            LoggerWrapper::callbackError($msg);
+            wp_send_json($msg, 400);
             return;        
         }
 
@@ -108,7 +112,9 @@ class WC_MCCP extends WC_Payment_Gateway {
         $invoice = WC_MCCP::get_invoice($params->invoice);
 
         if (!$invoice) {
-            wp_send_json("Invoice not found: " . $params->invoice, 404);
+            $msg = "Invoice not found: " . $params->invoice;
+            LoggerWrapper::callbackError($msg);
+            wp_send_json($msg, 404);
             return;
         }
 
@@ -116,7 +122,8 @@ class WC_MCCP extends WC_Payment_Gateway {
         $secret = get_option('woocommerce_mccp_secret');
 
         if (!Payment::checkInvoiceSecret($callback_secret, $secret, $invoice->order_id)) {
-            wp_send_json("Secret not valid: " . $callback_secret);
+            $msg = "Secret not valid: " . $callback_secret;
+            wp_send_json($msg, 400);
             return;
         }
 
@@ -127,14 +134,15 @@ class WC_MCCP extends WC_Payment_Gateway {
 			WC_MCCP::invoice_update($order, $invoice_updated);
 		}
 		else {
-			wp_send_json("Can't get invoice info", 400);
+			$msg = "Can't get invoice info";
+			wp_send_json($msg, 400);
 		}
 
 		exit;
 	}
 
 	/**
-	 * Invoce status check
+	 * Invoice status check
 	 * @return echo status value 
 	 */
 	function mccp_check_handler () {
