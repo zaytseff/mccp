@@ -77,6 +77,10 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 
 == Changelog ==
+= Version 1.2.5 | 02/08/2023 =
+- Improved plugin activation
+- Minor fixes
+
 = Version 1.2.4 | 25/07/2023 =
 - Add debug mode
 - Add woocommerce logs for errors & debug

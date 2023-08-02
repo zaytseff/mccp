@@ -194,7 +194,7 @@ class Apirone {
     }
 
 
-    // INVOICES MOTHODS
+    // INVOICES METHODS
 
     /**
      * 

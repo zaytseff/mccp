@@ -217,4 +217,15 @@ trait MCCP_Db {
 		return $result;
 	
 	}
+
+    public static function is_table_exists() {
+        global $wpdb, $table_prefix;
+
+        $result = $wpdb->query(ApironeApi\Db::isTableExists(DB_NAME, $table_prefix));
+        if ($result == 0) {
+            $table = $table_prefix . ApironeApi\Db::TABLE_INVOICE;
+            LoggerWrapper::error('Table "' . $table . '" doesn\'t exist.' );
+        }
+        return (bool) $result;
+    }
 }

@@ -40,6 +40,15 @@ class Db {
         return $query;
     }
 
+    public static function isTableExists($db_name, $table_prefix) {
+        $invoice_table = $table_prefix . self::TABLE_INVOICE;
+
+        $query = "SELECT * FROM information_schema.tables 
+            WHERE table_schema = '$db_name' 
+            AND table_name = '$invoice_table';";
+        return $query;
+    }
+
     /**
      * Return drop invoice table SQL query
      * 

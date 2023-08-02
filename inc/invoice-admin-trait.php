@@ -39,22 +39,32 @@ trait MCCP_Admin {
 	* @return void 
 	*/
 	public function admin_options() {
-		$this->mccp_init_form_fields();
-		if ( Apirone::isFiatSupported(get_option('woocommerce_currency')) ) :?>
+        global $table_prefix;
+        ?>
 			<h3><?php _e('Multi Crypto Currency Payment Gateway', 'mccp'); ?></h3>
 			<div><?php _e('This plugin uses the Apirone crypto processing service.', 'mccp'); ?> <a href="https://apirone.com" target="_blank"><?php _e('Details'); ?></a></div>
-			<table class="form-table mccp-settings">
-				<?php $this->generate_settings_html($this->form_fields); ?>
-			</table>
-		<?php else: ?>
-				<div class="inline error">
-				<?php if ( Apirone::serviceInfo() ) : ?>
-					<p><strong><?php _e('Currency check error', 'mccp'); ?></strong>: <?php _e('MCCP don\'t support your shop currency', 'mccp'); ?></p>
-				<?php else : ?>
-					<p><strong><?php _e('Gateway offline', 'mccp'); ?></strong>: <?php _e('Service not available. Please, try later', 'mccp'); ?></p>
-					<?php endif; ?>
-				</div>
-		<?php endif;
+        <?php
+        if ($this->is_table_exists()) : ?>
+        <?php
+            $this->mccp_init_form_fields();
+            if ( Apirone::isFiatSupported(get_option('woocommerce_currency')) ) :?>
+                <table class="form-table mccp-settings">
+                    <?php $this->generate_settings_html($this->form_fields); ?>
+                </table>
+            <?php else: ?>
+                    <div class="inline error">
+                    <?php if ( Apirone::serviceInfo() ) : ?>
+                        <p><strong><?php _e('Currency check error', 'mccp'); ?></strong>: <?php _e('MCCP don\'t support your shop currency', 'mccp'); ?></p>
+                    <?php else : ?>
+                        <p><strong><?php _e('Gateway offline', 'mccp'); ?></strong>: <?php _e('Service not available. Please, try later', 'mccp'); ?></p>
+                        <?php endif; ?>
+                    </div>
+            <?php endif; ?>
+        <?php else : ?>
+            <div class="inline error">
+                <p><strong><?php _e('Table check error', 'mccp'); ?></strong>: <?php _e('MCCP invoice table doesn\'t exists. Please contact the support.', 'mccp'); ?></p>
+            </div>
+        <?php endif;
 	}
 
 	/**
@@ -290,4 +300,8 @@ trait MCCP_Admin {
 
 		return $currencies;	
 	}
+
+    public function mccp_table_check() {
+        global $wpdb;
+    }
 }
