@@ -300,8 +300,4 @@ trait MCCP_Admin {
 
 		return $currencies;	
 	}
-
-    public function mccp_table_check() {
-        global $wpdb;
-    }
 }
