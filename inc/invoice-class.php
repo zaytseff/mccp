@@ -270,10 +270,11 @@ class WC_MCCP extends WC_Payment_Gateway {
 			<p><a href="<?php echo esc_url( $order->get_checkout_payment_url() ); ?>" class="button pay"><?php esc_html_e( 'Pay', 'woocommerce' ); ?></a></p>
 			<?php
 
-			return;		
+			return;
 		}
         
-        if (!$this->is_repayment() && ($order_invoice->status === 'completed' || $order_invoice->status === 'expired')) {
+        // if (!$this->is_repayment() && ($order_invoice->status === 'completed' || $order_invoice->status === 'expired')) {
+        if (!$this->is_repayment()) {
 			WC()->cart->empty_cart();
         }
 		$currencyInfo = Apirone::getCurrency($order_invoice->details->currency);
