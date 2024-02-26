@@ -1,8 +1,6 @@
 <?php
 namespace ApironeApi;
 
-// require_once(__DIR__ . '/Request.php');
-
 trait Utils {
 
     /**
