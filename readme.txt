@@ -10,7 +10,7 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Woocommerce plugin - Multi CryptoCurrency Payments
-Requires at least WooCommerce: 6.0 Tested up to: 8.4 License: GPLv2 or later
+Requires at least WooCommerce: 6.0 Tested up to: 8.6.1 License: GPLv2 or later
 
 == Description ==
 Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.
