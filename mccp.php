@@ -9,7 +9,7 @@ Author URI: https://github.com/zaytseff
 */
 
 if (!defined('ABSPATH'))
-	exit; // Exit if accessed directly
+    exit; // Exit if accessed directly
 
 require_once('inc/apirone_api/Apirone.php');
 require_once('inc/apirone_api/Payment.php');
@@ -31,21 +31,21 @@ add_action ('plugin_loaded', 'mccp_payment', 0);
  * @return void 
  */
 function mccp_payment() {
-	if (!class_exists('WC_Payment_Gateway'))
-		return;
-	if (class_exists('WC_MCCP'))
-		return;
+    if (!class_exists('WC_Payment_Gateway'))
+        return;
+    if (class_exists('WC_MCCP'))
+        return;
 
-	require_once 'inc/invoice-class.php';
+    require_once 'inc/invoice-class.php';
 
-	/**
-	 * Add MCCP gateway to WooCommerce
-	 */
-	function add_mccp_gateway($methods) {
-			$methods[] = 'WC_MCCP';
-			return $methods;
-	}
-	add_filter('woocommerce_payment_gateways', 'add_mccp_gateway');
+    /**
+     * Add MCCP gateway to WooCommerce
+     */
+    function add_mccp_gateway($methods) {
+            $methods[] = 'WC_MCCP';
+            return $methods;
+    }
+    add_filter('woocommerce_payment_gateways', 'add_mccp_gateway');
 }
 
 /**
@@ -56,7 +56,7 @@ function mccp_payment() {
  * @return void 
  */
 function pa($mixed, $title = '') {
-	echo '<pre>' . ($title ? $title . ': ' : '') . "\n";
-	print_r(gettype($mixed) !== 'boolean' ? $mixed : ($mixed ? 'true' : 'false'));
-	echo '</pre>';
+    echo '<pre>' . ($title ? $title . ': ' : '') . "\n";
+    print_r(gettype($mixed) !== 'boolean' ? $mixed : ($mixed ? 'true' : 'false'));
+    echo '</pre>';
 }
