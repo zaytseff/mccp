@@ -69,7 +69,7 @@ trait MCCP_Utils {
      * @return object|false
      */
     public function mccp_account($renew = false) {
-        $account = get_option('woocommerce_mccp_account');
+        $account = $this->get_option('woocommerce_mccp_account');
 
         if ( !$account || $renew ) {
             $account = Apirone::accountCreate();
@@ -123,10 +123,12 @@ trait MCCP_Utils {
     * @return void 
     */
     function payment_fields() {
+        $show_test_net = false;
         if ($this->is_repayment()) {
             $order_id = $this->is_repayment();
             $order    = wc_get_order( $order_id );
             $total = $order->get_total();
+            $show_test_net = $order->get_billing_email() == $this->get_option('test_customer') ? true : false;
         }
         else {
             $total = WC()->cart->total;
@@ -137,7 +139,9 @@ trait MCCP_Utils {
 
         foreach ((array) $this->get_option('currencies') as $item) {
             if ($item->testnet === 1 && !current_user_can('manage_options')) {
-                continue;
+                if ( !$show_test_net ) {
+                    continue;
+                }
             }
 
             if (!empty($item->address) && $item->enabled && $item->valid) {
@@ -158,6 +162,10 @@ trait MCCP_Utils {
             _e('Cryptocurrency payment temporary unavailable. Choose other payment method.', 'mccp');
             return;
         }
+        ?>
+        <?php 
+            // pa(current_user_can('manage_options')); 
+            // pa(wp_get_current_user());
         ?>
         <select id="mccp_currency" name="mccp_currency">
 

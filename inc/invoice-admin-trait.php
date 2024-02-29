@@ -141,7 +141,7 @@ trait MCCP_Admin {
                                     <?php endif;?>
                                     <?php if ($currency->testnet) : ?>
                                         <div class="testnet-info"><span class="testnet-info__message"><?php _e('WARNING: Test currency', 'mccp'); ?></span>
-                                        <?php echo wc_help_tip(__('Use this currency for test purposes only! This currency shown for admin only on front of woocommerce!')); ?></div>
+                                        <?php echo wc_help_tip(__('Use this currency for test purposes only! This currency shown for admin and "test currency customer" (if set) is only on the front end of Woocommerce!')); ?></div>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -177,6 +177,14 @@ trait MCCP_Admin {
                 'type' => 'text',
                 'default' => '',
                 'description' => __('Shows Merchant name in the payment order. If this field is blank then Site Title from General settings will be shown.', 'mccp'),
+                'desc_tip' => true,
+            ),
+            'test_customer' => array(
+                'title' => __('Test currency customer', 'mccp'),
+                'type' => 'email',
+                'default' => '',
+                'placeholder' => 'user@example.com',
+                'description' => __('Enter an email of the customer to whom the test currencies will be shown.', 'mccp'),
                 'desc_tip' => true,
             ),
             'timeout' => array(
