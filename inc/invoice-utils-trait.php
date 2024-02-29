@@ -129,7 +129,7 @@ trait MCCP_Utils {
             $total = $order->get_total();
         }
         else {
-            $total = WC()->cart->total;    
+            $total = WC()->cart->total;
         }
 
         $woo_currency = get_woocommerce_currency();
