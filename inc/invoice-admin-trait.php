@@ -54,7 +54,7 @@ trait MCCP_Admin {
             <?php else: ?>
                     <div class="inline error">
                     <?php if ( Apirone::serviceInfo() ) : ?>
-                        <p><strong><?php _e('Currency check error', 'mccp'); ?></strong>: <?php _e('MCCP don\'t support your shop currency', 'mccp'); ?></p>
+                        <p><strong><?php _e('Currency check error', 'mccp'); ?></strong>: <?php _e('The plugin does not support your store\'s currency', 'mccp'); ?></p>
                     <?php else : ?>
                         <p><strong><?php _e('Gateway offline', 'mccp'); ?></strong>: <?php _e('Service not available. Please, try later', 'mccp'); ?></p>
                         <?php endif; ?>
@@ -62,13 +62,13 @@ trait MCCP_Admin {
             <?php endif; ?>
         <?php else : ?>
             <div class="inline error">
-                <p><strong><?php _e('Table check error', 'mccp'); ?></strong>: <?php _e('MCCP invoice table doesn\'t exists. Please contact the support.', 'mccp'); ?></p>
+                <p><strong><?php _e('Table check error', 'mccp'); ?></strong>: <?php _e('The plugin invoice table does not exist. Try reinstalling the plugin. If the error persists, contact support.', 'mccp'); ?></p>
             </div>
         <?php endif;
     }
 
     /**
-     * Save apirone currensies into options table
+     * Save apirone currencies into options table
      *
      * @return void 
      */
@@ -76,7 +76,7 @@ trait MCCP_Admin {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $currencies = $this->mccp_currencies();
 
-            // Remove not valid currensies before save option
+            // Remove not valid currencies before save option
             foreach ($currencies as $key => $value) {
                 if (!empty($value->address) && !$value->valid) {
                     $currencies[$key]->address = '';
@@ -242,7 +242,7 @@ trait MCCP_Admin {
         );
     }
     /**
-    * Save apirone currensies into options table
+    * Save apirone currencies into options table
     */
     public function validate_currencies_list_field($k, $v) {
         $currencies = $this->mccp_currencies();
