@@ -124,6 +124,7 @@ trait MCCP_Utils {
     */
     function payment_fields() {
         $show_test_net = false;
+        $show_test_net = WC()->customer->get_billing_email() == $this->get_option('test_customer') ? true : false;
         if ($this->is_repayment()) {
             $order_id = $this->is_repayment();
             $order    = wc_get_order( $order_id );
@@ -163,28 +164,23 @@ trait MCCP_Utils {
             return;
         }
         ?>
-        <?php 
-            // pa(current_user_can('manage_options')); 
-            // pa(wp_get_current_user());
-        ?>
         <select id="mccp_currency" name="mccp_currency">
-
         <?php foreach ( $active_currencies as $currency ) : ?>
-
             <option <?php echo (!$currency['payable']) ? 'disabled' : ''; ?> value="<?php echo esc_html($currency['abbr']); ?>">
                 <?php echo esc_html($currency['name']); ?>:
                 <?php echo esc_html($currency['total']); ?>
             </option>
-
             <?php endforeach; ?>
-
         </select>
         <?php
     }
 
     function is_repayment () {
-        global $wp;
-        return array_key_exists('order-pay', $wp->query_vars) ? $wp->query_vars['order-pay'] : false;
+        if (isset($_GET['pay_for_order'])) {
+            return get_query_var('order-pay', false);
+        }
+
+        return false;
     }
 
     /**

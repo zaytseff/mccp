@@ -217,14 +217,6 @@ trait MCCP_Admin {
                 'desc_tip' => true,
                 'custom_attributes' => array('min' => 5, 'required' => 'required'),
             ),
-            'backlink' => array(
-                'title' => __('Back to store', 'mccp'),
-                'type' => 'text',
-                'default' => '',
-                'placeholder' => site_url(''),
-                'description' => __('Enter a valid URL for the "Back to store" link on the invoice page. If empty the home page is used.', 'mccp'),
-                'desc_tip' => true,
-            ),
             'apirone_logo' => array(
                 'title' => __('Apirone logo', 'mccp'),
                 'type' => 'checkbox',

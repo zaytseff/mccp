@@ -69,11 +69,14 @@ class WC_MCCP extends WC_Payment_Gateway {
      * @param int $order_id 
      * @return array 
      */
-    function process_payment($order_id) {
+    public function process_payment($order_id) {
         $order = new WC_Order($order_id);
         // Create redirect URL
         $redirect = $order->get_checkout_payment_url(true);
         $redirect = add_query_arg('mccp_currency', sanitize_text_field($_POST['mccp_currency']), $redirect);
+        if (isset($_GET['pay_for_order'])) {
+            $redirect = add_query_arg('repayment', true, $redirect);
+        }
 // pa($redirect);
 // exit;
         return array(
@@ -86,7 +89,7 @@ class WC_MCCP extends WC_Payment_Gateway {
      * Handle payment provider callback
      * @return never 
      */
-    function mccp_callback_handler () {
+    public function mccp_callback_handler () {
         $data = file_get_contents('php://input');
         if($data) {
             $params = json_decode(sanitize_text_field($data));
@@ -143,7 +146,7 @@ class WC_MCCP extends WC_Payment_Gateway {
      * Invoice status check
      * @return echo status value 
      */
-    function mccp_check_handler () {
+    public function mccp_check_handler () {
         $id = array_key_exists('id', $_GET) ? sanitize_text_field($_GET['id']) : false;
         if($id) {
             $invoice = WC_MCCP::get_invoice($id);
@@ -152,12 +155,9 @@ class WC_MCCP extends WC_Payment_Gateway {
         exit;
     }
 
-    function before_woocommerce_pay_mccp() {
-        global $wp;
-        // pa(__FUNCTION__);
+    public function before_woocommerce_pay_mccp() {
         if (isset($_GET['key'])) {
             $order_id = get_query_var('order-pay');
-            // $order_key = isset( $_GET['key'] ) ? wc_clean( wp_unslash( $_GET['key'] ) ) : ''; // WPCS: input var ok, CSRF ok.
             $order     = wc_get_order( $order_id );
             if (!$order || $order->get_payment_method() !== 'mccp') {
                 pa(__FUNCTION__ . ' ' . __LINE__ . ' return');
@@ -167,13 +167,9 @@ class WC_MCCP extends WC_Payment_Gateway {
             $invoices_list=  $this->get_order_invoices($order_id);
             $order_invoice = is_array($invoices_list) ? $invoices_list[0] : false;
 
-            pa($order->get_payment_method());
-            pa($order->get_checkout_payment_url(true));
             if ($order->get_status() !== 'pending' && $order_invoice && $order_invoice->status == 'completed') {
-            // pa($order->get_checkout_payment_url());
                 // Make redirect to order_received
                 $args = array(
-                    // 'order-received' => $order->get_id(),
                     'key' => $order->get_order_key(),
                 );
 
@@ -191,7 +187,7 @@ class WC_MCCP extends WC_Payment_Gateway {
      * @return mixed 
      * @throws Exception 
      */
-    function invoice_receipt($order_id) {
+    public function invoice_receipt($order_id) {
         if( $this->is_available() === false )
             return _e("Payment method disabled", 'mccp');
 
@@ -225,24 +221,36 @@ class WC_MCCP extends WC_Payment_Gateway {
         $invoices_list=  $this->get_order_invoices($order_id);
         $order_invoice = is_array($invoices_list) ? $invoices_list[0] : false;
 
-        // Process pay for order (Repayment)
-        if ( $this->is_repayment()) {
-            if ($order_invoice && $order_invoice->status == 'expired' && $order->get_status() === 'failed') {
-                $created = $this->invoice_create($order, $crypto_abbr, $crypto_total);
-                // Save invoice 
-                if ($created) {
-                    $this->invoice_update($order, $created);
-                    // Make redirect to payment page
-                    $args = array(
-                        'key' => $order->get_order_key(),
-                        'mccp_currency' => $crypto_abbr,
-                    );
+        if ( isset($_GET['repayment']) && $order_invoice) {
+            $created = null;
 
-                    $url = add_query_arg($args, $order->get_checkout_payment_url(true));
-                    wp_redirect($url); // Redirect to payment page
-                    exit();
+            // Create new invoice if expired;
+            if ($order_invoice->status == 'expired' && $order->get_status() === 'failed') {
+                $created = $this->invoice_create($order, $crypto_abbr, $crypto_total);
+            }
+
+            // Create new invoice if total or currency changed (invoice not expired)
+            if (in_array($order_invoice->status, ['created', 'partpaid'])) {
+                $details = $order_invoice->details;
+                $amount = (int) Apirone::cur2min($crypto_total, $_currency->{'units-factor'});
+                if ($details->amount !== (int) $amount || $details->currency !== $crypto_abbr) {
+                    $created = $this->invoice_create($order, $crypto_abbr, $crypto_total);
                 }
             }
+
+            // Save invoice & redirect to payment page
+            if ($created) {
+                $this->invoice_update($order, $created);
+                // Make redirect to payment page
+                $args = array(
+                    'key' => $order->get_order_key(),
+                    'mccp_currency' => $crypto_abbr,
+                );
+                $url = add_query_arg($args, $order->get_checkout_payment_url(true));
+                wp_redirect($url); // Redirect to payment page
+                exit();
+            }
+
         }
 
         if ($order_invoice) {
@@ -273,14 +281,14 @@ class WC_MCCP extends WC_Payment_Gateway {
         }
         
         $currencyInfo = Apirone::getCurrency($order_invoice->details->currency);
-        $this->invoice_show($order_invoice, $currencyInfo);
+        $this->invoice_show($order, $order_invoice, $currencyInfo);
 
         if ($order_invoice->status == 'expired' && $order->get_status() === 'failed') {
             wc_get_template( 'checkout/thankyou.php', array( 'order' => $order ) );
         }
     }
 
-    function invoice_create($order, $crypto_abbr, $crypto_total) {
+    public function invoice_create($order, $crypto_abbr, $crypto_total) {
         $_callback = site_url() . '?wc-api=mccp_callback&id=' . Payment::makeInvoiceSecret($this->mccp_secret(), $order->get_id());
         $_currency = $this->currencies[$crypto_abbr];
 
@@ -292,14 +300,14 @@ class WC_MCCP extends WC_Payment_Gateway {
             $order->get_total(),
             $order->get_currency()
         );
-
+        $invoiceData->linkback = $order->get_checkout_order_received_url();
         return Apirone::invoiceCreate($this->mccp_account(), $invoiceData);
     }
 
-    function invoice_show($invoice, &$currency) {
+    public function invoice_show(&$order, &$invoice, &$currency) {
         $check_timeout = $this->get_option('check_timeout');
         $merchant = $this->get_option('merchant') ? $this->get_option('merchant') : get_bloginfo();
-        $backlink = $this->get_option('backlink') ? $this->get_option('backlink') : site_url();
+        $backlink = $order->needs_payment() ? $order->get_checkout_payment_url() : $order->get_checkout_order_received_url();
         $logo = $this->get_option('apirone_logo') == 'yes' ? Apirone::getAssets('logo.svg') : false;
 
         $statusLink = site_url() . '?wc-api=mccp_check&id=' . $invoice->invoice;
