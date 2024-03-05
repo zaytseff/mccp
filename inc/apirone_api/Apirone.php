@@ -242,6 +242,7 @@ class Apirone {
         if ( $abbr[0] == 't') {
             $abbr = substr($abbr, 1);
         }
+        $abbr = str_replace('@', '_', $abbr);
         return sprintf(self::$currencyIconUrl, $abbr);
     }
 }

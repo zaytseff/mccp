@@ -1,7 +1,9 @@
 <?php
 namespace ApironeApi;
 
-// require_once(__DIR__ . '/Request.php');
+require_once(__DIR__ . '/QRCode.php');
+
+use ApironeApi\QRCode;
 
 trait Utils {
 
@@ -30,6 +32,23 @@ trait Utils {
         
         return sprintf('https://blockchair.com/%s/address/', strtolower(str_replace([' ', '(', ')'], ['-', '/', ''],  $currency->name))) . $address;
     }
+
+    /**
+     * Return base64 encoded QR png
+     *
+     * @param mixed $currency
+     * @param mixed $input_address
+     * @param mixed $amount
+     * @return string
+     */
+    public static function renderQr($currency, $input_address, $amount = null)
+    {
+        $prefix = (substr_count($input_address, ':') > 0) ? '' : strtolower(str_replace([' ', '(', ')'], ['-', '', ''], $currency->name)) . ':';
+        $amount = ($amount !== null && $amount > 0) ? '?amount=' . $amount : '';
+
+        return QRCode::init()->data($prefix . $input_address . $amount)->size(225)->levelQrt()->base64();
+    }
+
 
     /**
      * Return img tag with QR-code link

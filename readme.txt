@@ -2,15 +2,15 @@
 
 Contributors: zaytseff
 Tags: bitcoin, litecoin, dogecoin, bitcoin cash, BTC, LTC, BCH, Doge, plugin, forwarding, seamless, payment, cryptocurrency,Multi CryptoCurrency Payments,  accept BTC, accept LTC, accept BCH, accept Crypto
-Requires at least: 5.6
-Tested up to: 6.2.2
-Requires PHP: 7.0
-Stable tag: 1.2.4
+Requires at least: 7.4
+Tested up to: 6.4.2
+Requires PHP: 7.4
+Stable tag: 1.2.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Woocommerce plugin - Multi CryptoCurrency Payments
-Requires at least WooCommerce: 4.0 Tested up to: 7.7.2 License: GPLv2 or later
+Requires at least WooCommerce: 6.0 Tested up to: 8.6.1 License: GPLv2 or later
 
 == Description ==
 Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.

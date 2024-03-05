@@ -2,6 +2,7 @@
 
 namespace ApironeApi;
 use ApironeApi\Apirone;
+use QRCode;
 
 require_once(__DIR__ . '/Apirone.php');
 
@@ -22,7 +23,6 @@ class Payment {
         }
 
         $remains = Payment::exp2dec( Payment::min2cur($remains, $currency->{'units-factor'}) );
-        $link = Payment::getTransactionLink($currency);
 
         $status = $invoice->status;
         $statusCode = Payment::invoiceStatus($invoice);
@@ -43,7 +43,7 @@ class Payment {
                 <div class="invoice__info">
                     <div class="qr__wrapper">
                     <?php if ($status == 'created' || $status == 'partpaid') : ?>
-                        <img src="<?php echo Payment::getQrLink($currency, $details->address, $remains); ?>">
+                        <img src="<?php echo Payment::renderQr($currency, $details->address, $totalAmount); ?>">
                         <?php $statusMessageDesc = ($countdown >= 0) ? 'Waiting for payments...' : 'Updating status...'; ?>
                         <div class="status-icon-wrapper">
                             <div class="status-icon"></div>
@@ -65,7 +65,7 @@ class Payment {
                                     break;
                             }
                         ?>
-                        <img src="<?php echo Payment::getQrLink($currency, $details->address, $totalAmount); ?>" class="blur">
+                        <img src="<?php echo Payment::renderQr($currency, $details->address, $totalAmount); ?>" class="blur">
                         <div class="status-icon-wrapper">
                             <div class="status-icon"></div>
                         </div> 
@@ -145,7 +145,9 @@ class Payment {
                                 <div>
                                     <span class="date-gmt"><?php echo $item->date . 'Z'; ?></span> 
                                     <?php if (property_exists($item, 'txid')) : ?>
-                                    <a class="address-link" href="<?php echo $link . $item->txid; ?>" target="_blank"></a>
+                                    <a class="address-link" href="<?php echo Payment::getTransactionLink($currency, $item->txid); ?>" target="_blank">
+                                        (<?php echo Payment::exp2dec( Payment::min2cur($item->amount, $currency->{'units-factor'}) ); ?>)
+                                    </a>
                                     <?php endif; ?>
                                 </div>
                                 <div><strong><?php echo $item->status; ?></strong></div>
