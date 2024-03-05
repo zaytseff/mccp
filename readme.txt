@@ -1,7 +1,7 @@
 == Multi CryptoCurrency Payments ==
 
 Contributors: zaytseff
-Tags: bitcoin, litecoin, dogecoin, bitcoin cash, BTC, LTC, BCH, Doge, plugin, forwarding, seamless, payment, cryptocurrency,Multi CryptoCurrency Payments,  accept BTC, accept LTC, accept BCH, accept Crypto
+Tags: tron, usdt, bitcoin, litecoin, dogecoin, bitcoin cash, BTC, LTC, BCH, Doge, plugin, forwarding, seamless, payment, cryptocurrency,Multi CryptoCurrency Payments,  accept BTC, accept LTC, accept BCH, accept Crypto
 Requires at least: 7.4
 Tested up to: 6.4.2
 Requires PHP: 7.4
@@ -77,6 +77,12 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 
 == Changelog ==
+
+= Version 1.2.6 | 05/03/2024 =
+- Internal QR generator
+- Improved payment process
+- Tron support
+
 = Version 1.2.5 | 02/08/2023 =
 - Improved plugin activation
 - Minor fixes

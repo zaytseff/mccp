@@ -76,6 +76,12 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
+### Version 1.2.6 | 05/03/2024
+
+* Internal QR generator
+* Improved payment process
+* Tron support
+
 ### Version 1.2.5 | 02/08/2023
 
 * Improved plugin activation
