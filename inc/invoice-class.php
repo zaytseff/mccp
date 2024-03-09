@@ -77,8 +77,7 @@ class WC_MCCP extends WC_Payment_Gateway {
         if (isset($_GET['pay_for_order'])) {
             $redirect = add_query_arg('repayment', true, $redirect);
         }
-// pa($redirect);
-// exit;
+
         return array(
             'result'    => 'success',
             'redirect'  => $redirect,

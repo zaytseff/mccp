@@ -39,7 +39,6 @@ trait MCCP_Admin {
     * @return void 
     */
     public function admin_options() {
-        global $table_prefix;
         ?>
             <h3><?php _e('Multi Crypto Currency Payment Gateway', 'mccp'); ?></h3>
             <div><?php _e('This plugin uses the Apirone crypto processing service.', 'mccp'); ?> <a href="https://apirone.com" target="_blank"><?php _e('Details'); ?></a></div>
@@ -298,6 +297,6 @@ trait MCCP_Admin {
             $currencies[$apirone_currency->abbr] = $this->mccp_currency($apirone_currency, $apirone_account);
         }
 
-        return $currencies;    
+        return $currencies;
     }
 }

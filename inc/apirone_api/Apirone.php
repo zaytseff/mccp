@@ -239,7 +239,7 @@ class Apirone {
      * @return string 
      */
     static public function currencyIcon ($abbr) {
-        if ( $abbr[0] == 't') {
+        if ( $abbr[0] == 't' && $abbr !== 'trx') {
             $abbr = substr($abbr, 1);
         }
         $abbr = str_replace('@', '_', $abbr);
