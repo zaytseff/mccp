@@ -63,14 +63,13 @@ trait MCCP_Utils {
     }
 
     /**
-     *    Get account.
-     *  Create new account when option 'woocommerce_mccp_account' not exist
+     * Get account.
+     * Create new account when option 'woocommerce_mccp_account' not exist
      *
      * @return object|false
      */
     public function mccp_account($renew = false) {
-        $account = $this->get_option('woocommerce_mccp_account');
-
+        $account = get_option('woocommerce_mccp_account');
         if ( !$account || $renew ) {
             $account = Apirone::accountCreate();
             update_option('woocommerce_mccp_account', $account);
@@ -129,7 +128,7 @@ trait MCCP_Utils {
             $order_id = $this->is_repayment();
             $order    = wc_get_order( $order_id );
             $total = $order->get_total();
-            $show_test_net = $order->get_billing_email() == $this->get_option('test_customer') ? true : false;
+            // $show_test_net = $order->get_billing_email() == $this->get_option('test_customer') ? true : false;
         }
         else {
             $total = WC()->cart->total;
@@ -220,8 +219,7 @@ trait MCCP_Utils {
     }
     
     /**
-     * Update plugin from 1.2.1 to 1.2.2
-     * Fix mobile layout
+     * Update plugin from 1.2.2 to 1.2.3
      * @return void 
      */
     function update_1_2_2__1_2_3() {
@@ -320,7 +318,7 @@ trait MCCP_Utils {
 
         $apirone_account = $this->mccp_account();
 
-        // Map old currensies
+        // Map old currencies
         foreach (Apirone::currencyList() as $apirone_currency) {
             $currency = $this->mccp_currency($apirone_currency, $apirone_account);
             if (array_key_exists($apirone_currency->abbr, (array) $settings['currencies'])) {
@@ -342,7 +340,7 @@ trait MCCP_Utils {
             $mccp_currencies[$apirone_currency->abbr] = $currency;
 
         }
-        // Update currensies
+        // Update currencies
         $settings['currencies'] = $mccp_currencies;
         // Add new params
         $settings['factor'] = '1';
