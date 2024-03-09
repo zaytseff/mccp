@@ -5,7 +5,7 @@ Tags: tron, usdt, bitcoin, litecoin, dogecoin, bitcoin cash, BTC, LTC, BCH, Doge
 Requires at least: 7.4
 Tested up to: 6.4.2
 Requires PHP: 7.4
-Stable tag: 1.2.6
+Stable tag: 1.2.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,12 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 
 == Changelog ==
+
+= Version 1.2.7 | 09/03/2024 =
+- Fix lost destinations
+- Fix trx icon
+- Add Plugin Info block
+- Code cleanup
 
 = Version 1.2.6 | 05/03/2024 =
 - Internal QR generator

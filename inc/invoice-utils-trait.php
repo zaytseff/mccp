@@ -216,8 +216,23 @@ trait MCCP_Utils {
         $this->update_1_2_0__1_2_1();
         $this->update_1_2_1__1_2_2();
         $this->update_1_2_2__1_2_3();
+        $this->update_1_2_3__1_2_7();
     }
     
+    /**
+     * Update plugin from 1.2.3 to 1.2.7
+     * @return void 
+     */
+    function update_1_2_3__1_2_7() {
+        if ($this->version() !== '1.2.3') {
+            return;
+        }
+        $settings = get_option('woocommerce_mccp_settings');
+        $settings['version'] = '1.2.7';
+        unset($settings['backlink']);
+        update_option('woocommerce_mccp_settings', $settings);
+    }
+
     /**
      * Update plugin from 1.2.2 to 1.2.3
      * @return void 
