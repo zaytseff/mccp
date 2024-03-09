@@ -76,6 +76,13 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
+### Version 1.2.7 | 09/03/2024
+
+* Fix lost destinations
+* Fix trx icon
+* Add Plugin Info block
+* Code cleanup
+
 ### Version 1.2.6 | 05/03/2024
 
 * Internal QR generator

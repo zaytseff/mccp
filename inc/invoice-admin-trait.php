@@ -39,9 +39,11 @@ trait MCCP_Admin {
     * @return void 
     */
     public function admin_options() {
+        global $wp_version;
         ?>
             <h3><?php _e('Multi Crypto Currency Payment Gateway', 'mccp'); ?></h3>
             <div><?php _e('This plugin uses the Apirone crypto processing service.', 'mccp'); ?> <a href="https://apirone.com" target="_blank"><?php _e('Details'); ?></a></div>
+            <hr>
         <?php
         if ($this->is_table_exists()) : ?>
         <?php
@@ -63,7 +65,18 @@ trait MCCP_Admin {
             <div class="inline error">
                 <p><strong><?php _e('Table check error', 'mccp'); ?></strong>: <?php _e('The plugin invoice table does not exist. Try reinstalling the plugin. If the error persists, contact support.', 'mccp'); ?></p>
             </div>
-        <?php endif;
+        <?php endif; ?>
+            <div><hr/>
+            <h3>Plugin Info:</h3>
+                Version: <b><?php echo $this->get_option('version'); ?></b></br>
+                Account: <b><?php echo $this->mccp_account()->account; ?></b><br/>
+                PHP version: <b><?php echo phpversion(); ?></b><br/>
+                WordPress: <b><?php echo $wp_version; ?></b><br/>
+                WooCommerce: <b><?php echo WC_VERSION; ?></b><br/>
+                <?php _e('Apirone support: '); ?><a href="mailto:support@apirone.com">support@apirone.com</a>
+                <hr/>
+            </div>
+        <?php
     }
 
     /**

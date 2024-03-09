@@ -159,7 +159,6 @@ class WC_MCCP extends WC_Payment_Gateway {
             $order_id = get_query_var('order-pay');
             $order     = wc_get_order( $order_id );
             if (!$order || $order->get_payment_method() !== 'mccp') {
-                pa(__FUNCTION__ . ' ' . __LINE__ . ' return');
                 return;
             }
 
