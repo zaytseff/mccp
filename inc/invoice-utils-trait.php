@@ -217,8 +217,38 @@ trait MCCP_Utils {
         $this->update_1_2_1__1_2_2();
         $this->update_1_2_2__1_2_3();
         $this->update_1_2_3__1_2_7();
+        $this->update_1_2_7__1_2_8();
     }
-    
+
+    function update_1_2_7__1_2_8() {
+        if ($this->version() !== '1.2.7') {
+            return;
+        }
+
+        $settings = get_option('woocommerce_mccp_settings');
+        if ( !$settings ) {
+            return;
+        }
+        $account = $this->mccp_account();
+        $endpoint = '/v2/accounts/' . $account->account;
+        foreach ($settings['currencies'] as $currency) {
+            $params['transfer-key'] = $account->{'transfer-key'};
+            $params['currency'] = $currency->abbr;
+            if ($currency->address) {
+                $params['destinations'][] = array("address" => $currency->address);
+            }
+            $params['processing-fee-policy'] = 'percentage';
+            
+            Request::execute('patch', $endpoint, $params, true);
+        }
+
+        $settings['version'] = '1.2.8';
+        $settings['processing_fee'] = 'percentage';
+        unset($settings['woocommerce_mccp_account']);
+        
+        update_option('woocommerce_mccp_settings', $settings);
+    }
+
     /**
      * Update plugin from 1.2.3 to 1.2.7
      * @return void 
