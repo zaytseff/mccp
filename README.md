@@ -76,6 +76,12 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
+### Version 1.2.8 | 02/04/2024
+
+* Automatic destination addresses update
+* Processing fee plan param added
+* Code cleanup
+
 ### Version 1.2.7 | 09/03/2024
 
 * Fix lost destinations
