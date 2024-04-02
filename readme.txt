@@ -1,16 +1,15 @@
 == Multi CryptoCurrency Payments ==
 
 Contributors: zaytseff
-Tags: tron, usdt, bitcoin, litecoin, dogecoin, bitcoin cash, BTC, LTC, BCH, Doge, plugin, forwarding, seamless, payment, cryptocurrency,Multi CryptoCurrency Payments,  accept BTC, accept LTC, accept BCH, accept Crypto
-Requires at least: 7.4
-Tested up to: 6.4.2
+Tags: accept, bitcoin, litecoin, usdt, crypto
+Tested up to: 6.4.3
 Requires PHP: 7.4
-Stable tag: 1.2.7
+Stable tag: 1.2.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Woocommerce plugin - Multi CryptoCurrency Payments
-Requires at least WooCommerce: 6.0 Tested up to: 8.6.1 License: GPLv2 or later
+WooCommerce plugin - Multi CryptoCurrency Payments
+Requires at least WooCommerce: 6.0 Tested up to: 8.7.0 License: GPLv2 or later
 
 == Description ==
 Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.
@@ -41,10 +40,10 @@ Click Install Now.
 Fill settings of your crypto addresses into Plugin Settings: WooCommerce > Settings > Payments > Multi CryptoCurrency Payments. Turn the "On" checkbox in the Plugin on the same setting page.
 
 == Third Party API & License Information ==	
-* **API website: ** [https://apirone.com](https://apirone.com)	
-* **API docs: ** [https://apirone.com/docs/](https://apirone.com/docs/)	
-* **Privacy policy: ** [https://apirone.com/privacy-policy](https://apirone.com/privacy-policy)	
-* **Support: ** <support@apirone.com>	
+* API website: [https://apirone.com](https://apirone.com)	
+* API docs: [https://apirone.com/docs/](https://apirone.com/docs/)	
+* Privacy policy: [https://apirone.com/privacy-policy](https://apirone.com/privacy-policy)	
+* Support: <support@apirone.com>	
 
 == Frequently Asked Questions ==
 #### I will get money in USD, EUR, CAD, JPY, RUR...?
@@ -78,6 +77,11 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 == Changelog ==
 
+= Version 1.2.8 | 02/04/2024 =
+- Automatic destination addresses update
+- Processing fee plan param added
+- Code cleanup
+
 = Version 1.2.7 | 09/03/2024 =
 - Fix lost destinations
 - Fix trx icon
@@ -95,10 +99,10 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 = Version 1.2.4 | 25/07/2023 =
 - Add debug mode
-- Add woocommerce logs for errors & debug
+- Add WooCommerce logs for errors & debug
 
 = Version 1.2.3 | 02/06/2023 =
-- Fix checkout process for guests & registred users
+- Fix checkout process for guests & registered users
 - Add redirect to thank you page and support downloadable products
 - Minor design fixes
 

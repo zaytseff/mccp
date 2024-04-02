@@ -170,7 +170,7 @@ trait MCCP_Admin {
     }
 
     /**
-     * Init Gateway Settings Form Fields    
+     * Init Gateway Settings Form Fields
      *
      * @return void
     */
@@ -213,11 +213,20 @@ trait MCCP_Admin {
                 'desc_tip' => true,
                 'default' => [],
             ),
+            'processing_fee' => array(
+                'title' => __('Processing fee plan', 'mccp'),
+                'type' => 'select',
+                'options' => [
+                    'percentage' => __('Percentage'),
+                    'fixed' => __('Fixed'),
+                ],
+                'default' => 'percentage',
+            ),
             'factor' => array(
                 'title' => __('Price adjustment factor', 'mccp'),
                 'type' => 'number',
                 'default' => '1',
-                'description' => __('If you want to add/substract percent to/from the payment amount, use the following  price adjustment factor multiplied by the amount.<br />For example: <br />100% * 0.99 = 99% <br />100% * 1.01 = 101%', 'mccp'),
+                'description' => __('If you want to add/subtract percent to/from the payment amount, use the following  price adjustment factor multiplied by the amount.<br />For example: <br />100% * 0.99 = 99% <br />100% * 1.01 = 101%', 'mccp'),
                 'desc_tip' => true,
                 'custom_attributes' => array('min' => 0.01, 'step' => '0.01', 'required' => 'required'),
             ),
@@ -292,11 +301,11 @@ trait MCCP_Admin {
                 if (array_key_exists('enabled', $_POST['woocommerce_mccp_currencies'][$currency->abbr])) {
                     $currency->enabled = sanitize_text_field($_POST['woocommerce_mccp_currencies'][$currency->abbr]['enabled']);
                 }
+                $processing_fee = sanitize_text_field($_POST['woocommerce_mccp_processing_fee']);
                 $currency->address = sanitize_text_field($_POST['woocommerce_mccp_currencies'][$currency->abbr]['address']);
-                if ($currency->address != '') {
-                    $result = Apirone::setTransferAddress($apirone_account, $apirone_currency->abbr, $currency->address);
-                    $currency->valid = $result ? 1 : 0;
-                }
+                
+                $result = Apirone::setTransferAddress($apirone_account, $apirone_currency->abbr, $currency->address, $processing_fee);
+                $currency->valid = $result ? 1 : 0;
             }
             return $currency;
     }
