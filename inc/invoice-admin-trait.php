@@ -217,8 +217,8 @@ trait MCCP_Admin {
                 'title' => __('Processing fee plan', 'mccp'),
                 'type' => 'select',
                 'options' => [
-                    'percentage' => __('Percentage plan'),
-                    'fixed' => __('Fixed plan'),
+                    'percentage' => __('Percentage'),
+                    'fixed' => __('Fixed'),
                 ],
                 'default' => 'percentage',
             ),
@@ -303,8 +303,9 @@ trait MCCP_Admin {
                 }
                 $processing_fee = sanitize_text_field($_POST['woocommerce_mccp_processing_fee']);
                 $currency->address = sanitize_text_field($_POST['woocommerce_mccp_currencies'][$currency->abbr]['address']);
-                    $result = Apirone::setTransferAddress($apirone_account, $apirone_currency->abbr, $currency->address, $processing_fee);
-                    $currency->valid = $result ? 1 : 0;
+                
+                $result = Apirone::setTransferAddress($apirone_account, $apirone_currency->abbr, $currency->address, $processing_fee);
+                $currency->valid = $result ? 1 : 0;
             }
             return $currency;
     }

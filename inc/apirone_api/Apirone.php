@@ -182,11 +182,7 @@ class Apirone {
 
         $params['transfer-key'] = $account->{'transfer-key'};
         $params['currency'] = $currency;
-        // if ($address) {
-        //     $params['destinations'][] = array("address" => $address);
-        // }
         $params['destinations'] = $address ? [["address" => $address]] : null;
-
         $params['processing-fee-policy'] = $processing_fee;
 
         $result = Request::execute('patch', $endpoint, json_encode($params), true);

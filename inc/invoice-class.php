@@ -287,14 +287,17 @@ class WC_MCCP extends WC_Payment_Gateway {
     }
 
     public function invoice_create($order, $crypto_abbr, $crypto_total) {
-        $_callback = site_url() . '?wc-api=mccp_callback&id=' . Payment::makeInvoiceSecret($this->mccp_secret(), $order->get_id());
+        $id = Payment::makeInvoiceSecret($this->mccp_secret(), $order->get_id());
+        $version = $this->get_option('version');
+        $callback_url = sprintf(site_url() . '?wc-api=mccp_callback&id=%s&v=%s', $id, $version);
+        
         $_currency = $this->currencies[$crypto_abbr];
 
         $invoiceData = Payment::makeInvoiceData(
             $crypto_abbr,
             (int)Apirone::cur2min($crypto_total, $_currency->{'units-factor'}),
             (int) $this->get_option('timeout'),
-            $_callback,
+            $callback_url,
             $order->get_total(),
             $order->get_currency()
         );
