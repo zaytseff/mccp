@@ -14,10 +14,10 @@ jobs:
 
       - name: Build artifacts
         run: |
-          mkdir ./multi-crypto-currency-payments
-          cp -R -t ./multi-crypto-currency-payments ./assets ./inc LICENSE.txt mccp.php readme.txt
-          zip -r ./multi-crypto-currency-payments.zip ./multi-crypto-currency-payments
-          rm -rf ./multi-crypto-currency-payments
+          mkdir ./multi-crypto-currency-payment
+          cp -R -t ./multi-crypto-currency-payment ./assets ./inc LICENSE.txt mccp.php readme.txt
+          zip -r ./multi-crypto-currency-payment.zip ./multi-crypto-currency-payment
+          rm -rf ./multi-crypto-currency-payment
 
       - name: Release
         id: release
