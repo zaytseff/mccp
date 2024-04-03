@@ -24,7 +24,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            multi-crypto-currency-payments.zip
+            multi-crypto-currency-payment.zip
 
       - name: Build message
         run: |
