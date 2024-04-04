@@ -77,6 +77,11 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 == Changelog ==
 
+= Version 1.2.9 | 04/04/2024 =
+- Add settings saver when account recreated
+- Plugin updater refactoring
+- Code cleanup
+
 = Version 1.2.8 | 02/04/2024 =
 - Automatic destination addresses update
 - Processing fee plan param added
