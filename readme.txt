@@ -2,9 +2,12 @@
 
 Contributors: zaytseff
 Tags: accept, bitcoin, litecoin, usdt, crypto
-Tested up to: 6.4.3
+Stable tag: 1.2.9
 Requires PHP: 7.4
-Stable tag: 1.2.8
+Requires Plugins: woocommerce
+Requires at least: 6.1
+Tested up to: 6.5
+WC tested up to: 8.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
