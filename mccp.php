@@ -1,12 +1,13 @@
 <?php
-/*
-Plugin Name: Multi Crypto Currency Payment
-Plugin URI: https://github.com/zaytseff/mccp-woo
-Description: Multi currency crypto payments for Woocommerce. Uses Apirone Processing Provider
-Version: 1.2.8
-Author: Alex Zaytseff
-Author URI: https://github.com/zaytseff
-*/
+/**
+ * Plugin Name: Multi Crypto Currency Payment
+ * Plugin URI: https://github.com/zaytseff/mccp-woo
+ * Description: Multi currency crypto payments for WooCommerce. Uses Apirone Processing Provider
+ * Version: 1.2.9
+ * Tested up to: 6.5
+ * Author: Alex Zaytseff
+ * Author URI: https://github.com/zaytseff
+ */
 
 if (!defined('ABSPATH'))
 	exit; // Exit if accessed directly

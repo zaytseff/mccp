@@ -73,6 +73,7 @@ trait MCCP_Utils {
         if ( !$account || $renew ) {
             $account = Apirone::accountCreate();
             update_option('woocommerce_mccp_account', $account);
+            $this->save_settings_to_account();
         }
         return $account;
     }
@@ -183,13 +184,37 @@ trait MCCP_Utils {
     }
 
     /**
-     * Get plugin version
+     * save existing settings for account
+     *
+     * @return void 
+     */
+    function save_settings_to_account() {
+        $settings = get_option('woocommerce_mccp_settings');
+        if ( !$settings ) {
+            return;
+        }
+
+        $account = $this->mccp_account();
+        $processing_fee = $this->get_option('processing_fee', 'percentage');
+        $endpoint = '/v2/accounts/' . $account->account;
+
+        foreach ($settings['currencies'] as $currency) {
+            $params['transfer-key'] = $account->{'transfer-key'};
+            $params['currency'] = $currency->abbr;
+            $params['destinations'] = $currency->address ? [["address" => $currency->address]] : null;
+            $params['processing-fee-policy'] = $processing_fee;
+
+            Request::execute('patch', $endpoint, $params, true);
+        }
+    }
+
+    /**
+     * Get plugin version from settings
      *
      * @return false|string
      */
     function version() {
-        $settings = get_option('woocommerce_mccp_settings', array());
-        return array_key_exists('version', $settings) ? $settings['version'] : false;
+        return $this->get_option('version', false);
     }
 
     /**
@@ -197,11 +222,10 @@ trait MCCP_Utils {
      *
      * @return void 
      */    
-    function upd_version($new) {
-        $settings = get_option('woocommerce_mccp_settings');
-        $settings['version'] = $new;
-
-        update_option('woocommerce_mccp_settings', $settings);
+    function version_update($new_version) {
+        if ($this->update_option('version', $new_version)) {
+            $this->version = $new_version;
+        }
     }
 
     /**
@@ -218,35 +242,33 @@ trait MCCP_Utils {
         $this->update_1_2_2__1_2_3();
         $this->update_1_2_3__1_2_7();
         $this->update_1_2_7__1_2_8();
+        $this->update_1_2_8__1_2_9();
+    }
+
+    function update_1_2_8__1_2_9() {
+        if ($this->version() !== '1.2.8') {
+            return;
+        }
+        $this->save_settings_to_account();
+
+        $this->version_update('1.2.9');
     }
 
     function update_1_2_7__1_2_8() {
         if ($this->version() !== '1.2.7') {
             return;
         }
+        $this->save_settings_to_account();
 
         $settings = get_option('woocommerce_mccp_settings');
         if ( !$settings ) {
             return;
         }
-        $account = $this->mccp_account();
-        $endpoint = '/v2/accounts/' . $account->account;
-        foreach ($settings['currencies'] as $currency) {
-            $params['transfer-key'] = $account->{'transfer-key'};
-            $params['currency'] = $currency->abbr;
-            if ($currency->address) {
-                $params['destinations'][] = array("address" => $currency->address);
-            }
-            $params['processing-fee-policy'] = 'percentage';
-            
-            Request::execute('patch', $endpoint, $params, true);
-        }
-
-        $settings['version'] = '1.2.8';
         $settings['processing_fee'] = 'percentage';
         unset($settings['woocommerce_mccp_account']);
-        
         update_option('woocommerce_mccp_settings', $settings);
+
+        $this->version_update('1.2.8');
     }
 
     /**
@@ -254,13 +276,13 @@ trait MCCP_Utils {
      * @return void 
      */
     function update_1_2_3__1_2_7() {
-        if ($this->version() !== '1.2.3') {
-            return;
+        if (in_array($this->version(), ['1.2.3','1.2.4','1.2.5','1.2.6'])) {
+            $this->version_update('1.2.7');
+
+            $settings = get_option('woocommerce_mccp_settings');
+            unset($settings['backlink']);
+            update_option('woocommerce_mccp_settings', $settings);
         }
-        $settings = get_option('woocommerce_mccp_settings');
-        $settings['version'] = '1.2.7';
-        unset($settings['backlink']);
-        update_option('woocommerce_mccp_settings', $settings);
     }
 
     /**
@@ -271,7 +293,7 @@ trait MCCP_Utils {
         if ($this->version() !== '1.2.2') {
             return;
         }
-        $this->upd_version('1.2.3');
+        $this->version_update('1.2.3');
     }
 
     /**
@@ -283,7 +305,7 @@ trait MCCP_Utils {
         if ($this->version() !== '1.2.1') {
             return;
         }
-        $this->upd_version('1.2.2');
+        $this->version_update('1.2.2');
     }
 
     /**
@@ -295,7 +317,7 @@ trait MCCP_Utils {
         if ($this->version() !== '1.2.0') {
             return;
         }
-        $this->upd_version('1.2.1');
+        $this->version_update('1.2.1');
     }
 
     /**
@@ -322,7 +344,7 @@ trait MCCP_Utils {
             
             Request::execute('patch', $endpoint, $params, true);
         }
-        $this->upd_version('1.2.0');
+        $this->version_update('1.2.0');
     }
 
     /**
@@ -331,9 +353,10 @@ trait MCCP_Utils {
      * @return void 
      */
     function update_1_1_0__1_1_1() {
-        if ($this->version() === '1.1.0') {
-            $this->upd_version('1.1.1');
+        if ($this->version() !== '1.1.0') {
+            return;
         }
+        $this->version_update('1.1.1');
     }
 
     /**
@@ -342,12 +365,12 @@ trait MCCP_Utils {
      * @return void 
      */
     function update_1_0_0__1_1_0() {
-        if ($this->version() !== false) {
+        if ($this->version()) {
             return;
         }
         global $wpdb, $table_prefix;
 
-        // Table update when plugin aleady installed & active
+        // Table update when plugin already installed & active
         $table = $table_prefix . DB::TABLE_INVOICE;
         $is_metadata = sprintf('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = "%s" AND column_name = "meta"', $table);
         $row = $wpdb->get_results($is_metadata);
