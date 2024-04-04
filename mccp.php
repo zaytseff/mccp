@@ -4,13 +4,9 @@
  * Plugin URI: https://github.com/zaytseff/mccp-woo
  * Description: Multi currency crypto payments for WooCommerce. Uses Apirone Processing Provider
  * Version: 1.2.9
+ * Tested up to: 6.5
  * Author: Alex Zaytseff
  * Author URI: https://github.com/zaytseff
- * Requires Plugins: woocommerce
- * Requires at least: 6.1
- * Tested up to: 6.5
- * WC requires at least: 8.2
- * WC tested up to: 8.7
  */
 
 if (!defined('ABSPATH'))
