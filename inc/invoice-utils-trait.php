@@ -209,7 +209,7 @@ trait MCCP_Utils {
     }
 
     /**
-     * Get plugin version
+     * Get plugin version from settings
      *
      * @return false|string
      */
@@ -223,7 +223,9 @@ trait MCCP_Utils {
      * @return void 
      */    
     function version_update($new_version) {
-        $this->update_option('version', $new_version);
+        if ($this->update_option('version', $new_version)) {
+            $this->version = $new_version;
+        }
     }
 
     /**
@@ -249,14 +251,7 @@ trait MCCP_Utils {
         }
         $this->save_settings_to_account();
 
-        $settings = get_option('woocommerce_mccp_settings');
-        if ( !$settings ) {
-            return;
-        }
-        $settings['version'] = '1.2.9';
-        $settings['processing_fee'] = 'percentage';
-        unset($settings['woocommerce_mccp_account']);
-        update_option('woocommerce_mccp_settings', $settings);
+        $this->version_update('1.2.9');
     }
 
     function update_1_2_7__1_2_8() {
@@ -269,10 +264,11 @@ trait MCCP_Utils {
         if ( !$settings ) {
             return;
         }
-        $settings['version'] = '1.2.8';
         $settings['processing_fee'] = 'percentage';
         unset($settings['woocommerce_mccp_account']);
         update_option('woocommerce_mccp_settings', $settings);
+
+        $this->version_update('1.2.8');
     }
 
     /**
@@ -280,14 +276,13 @@ trait MCCP_Utils {
      * @return void 
      */
     function update_1_2_3__1_2_7() {
-        $version = $this->version();
-        if ($version && !in_array($version, ['1.2.3','1.2.4','1.2.5','1.2.6'])) {
-            return;
+        if (in_array($this->version(), ['1.2.3','1.2.4','1.2.5','1.2.6'])) {
+            $this->version_update('1.2.7');
+
+            $settings = get_option('woocommerce_mccp_settings');
+            unset($settings['backlink']);
+            update_option('woocommerce_mccp_settings', $settings);
         }
-        $settings = get_option('woocommerce_mccp_settings');
-        $settings['version'] = '1.2.7';
-        unset($settings['backlink']);
-        update_option('woocommerce_mccp_settings', $settings);
     }
 
     /**
@@ -358,9 +353,10 @@ trait MCCP_Utils {
      * @return void 
      */
     function update_1_1_0__1_1_1() {
-        if ($this->version() === '1.1.0') {
-            $this->version_update('1.1.1');
+        if ($this->version() !== '1.1.0') {
+            return;
         }
+        $this->version_update('1.1.1');
     }
 
     /**
@@ -369,12 +365,12 @@ trait MCCP_Utils {
      * @return void 
      */
     function update_1_0_0__1_1_0() {
-        if ($this->version() !== false) {
+        if ($this->version()) {
             return;
         }
-    global $wpdb, $table_prefix;
+        global $wpdb, $table_prefix;
 
-        // Table update when plugin aleady installed & active
+        // Table update when plugin already installed & active
         $table = $table_prefix . DB::TABLE_INVOICE;
         $is_metadata = sprintf('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = "%s" AND column_name = "meta"', $table);
         $row = $wpdb->get_results($is_metadata);
