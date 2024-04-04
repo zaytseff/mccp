@@ -34,7 +34,11 @@ class WC_MCCP extends WC_Payment_Gateway {
     public $errors_count = 0;
 
     public function __construct() {
+        $debug = $this->get_option('debug') == 'yes' ? true : false;
+        Apirone::setLogger(new \WC_Logger(), $debug);
+
         $this->update();
+
         $this->title         = __('Crypto currency payment', 'mccp');
         $this->description   = __('Start accepting multi cryptocurrency payments', 'mccp');
         $this->method_title  = __('Multi Crypto Currency Payments', 'mccp');
@@ -42,12 +46,8 @@ class WC_MCCP extends WC_Payment_Gateway {
 
         $this->mccp_init_form_fields();
 
-        $this->enabled = $this->get_option('enabled');
-        $this->currencies = $this->get_option('currencies');
-
-        $debug = $this->get_option('debug') == 'yes' ? true : false;
-
-        Apirone::setLogger(new \WC_Logger(), $debug);
+        $this->currencies = $this->get_option('currencies', []);
+        $this->enabled = $this->get_option('enabled', false);
 
         add_action('woocommerce_receipt_mccp', array( $this, 'invoice_receipt' ));
         // add_action('before_woocommerce_pay', array( $this, 'before_woocommerce_pay_mccp' ));

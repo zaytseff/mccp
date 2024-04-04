@@ -73,6 +73,7 @@ trait MCCP_Utils {
         if ( !$account || $renew ) {
             $account = Apirone::accountCreate();
             update_option('woocommerce_mccp_account', $account);
+            $this->save_settings_to_account();
         }
         return $account;
     }
@@ -183,6 +184,31 @@ trait MCCP_Utils {
     }
 
     /**
+     * save existing settings for account
+     *
+     * @return void 
+     */
+    function save_settings_to_account() {
+        $settings = get_option('woocommerce_mccp_settings');
+        if ( !$settings ) {
+            return;
+        }
+
+        $account = $this->mccp_account();
+        $processing_fee = $this->get_option('processing_fee', 'percentage');
+        $endpoint = '/v2/accounts/' . $account->account;
+
+        foreach ($settings['currencies'] as $currency) {
+            $params['transfer-key'] = $account->{'transfer-key'};
+            $params['currency'] = $currency->abbr;
+            $params['destinations'] = $currency->address ? [["address" => $currency->address]] : null;
+            $params['processing-fee-policy'] = $processing_fee;
+
+            Request::execute('patch', $endpoint, $params, true);
+        }
+    }
+
+    /**
      * Get plugin version
      *
      * @return false|string
@@ -197,11 +223,8 @@ trait MCCP_Utils {
      *
      * @return void 
      */    
-    function upd_version($new) {
-        $settings = get_option('woocommerce_mccp_settings');
-        $settings['version'] = $new;
-
-        update_option('woocommerce_mccp_settings', $settings);
+    function version_update($new_version) {
+        $this->update_option('version', $new_version);
     }
 
     /**
@@ -224,26 +247,15 @@ trait MCCP_Utils {
         if ($this->version() !== '1.2.7') {
             return;
         }
+        $this->save_settings_to_account();
 
         $settings = get_option('woocommerce_mccp_settings');
         if ( !$settings ) {
             return;
         }
-        $account = $this->mccp_account();
-        $endpoint = '/v2/accounts/' . $account->account;
-        foreach ($settings['currencies'] as $currency) {
-            $params['transfer-key'] = $account->{'transfer-key'};
-            $params['currency'] = $currency->abbr;
-            $params['destinations'] = $currency->address ? [["address" => $currency->address]] : null;
-            $params['processing-fee-policy'] = 'percentage';
-
-            Request::execute('patch', $endpoint, $params, true);
-        }
-
         $settings['version'] = '1.2.8';
         $settings['processing_fee'] = 'percentage';
         unset($settings['woocommerce_mccp_account']);
-        
         update_option('woocommerce_mccp_settings', $settings);
     }
 
@@ -269,7 +281,7 @@ trait MCCP_Utils {
         if ($this->version() !== '1.2.2') {
             return;
         }
-        $this->upd_version('1.2.3');
+        $this->version_update('1.2.3');
     }
 
     /**
@@ -281,7 +293,7 @@ trait MCCP_Utils {
         if ($this->version() !== '1.2.1') {
             return;
         }
-        $this->upd_version('1.2.2');
+        $this->version_update('1.2.2');
     }
 
     /**
@@ -293,7 +305,7 @@ trait MCCP_Utils {
         if ($this->version() !== '1.2.0') {
             return;
         }
-        $this->upd_version('1.2.1');
+        $this->version_update('1.2.1');
     }
 
     /**
@@ -320,7 +332,7 @@ trait MCCP_Utils {
             
             Request::execute('patch', $endpoint, $params, true);
         }
-        $this->upd_version('1.2.0');
+        $this->version_update('1.2.0');
     }
 
     /**
@@ -330,7 +342,7 @@ trait MCCP_Utils {
      */
     function update_1_1_0__1_1_1() {
         if ($this->version() === '1.1.0') {
-            $this->upd_version('1.1.1');
+            $this->version_update('1.1.1');
         }
     }
 
