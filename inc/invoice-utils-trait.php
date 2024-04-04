@@ -214,8 +214,7 @@ trait MCCP_Utils {
      * @return false|string
      */
     function version() {
-        $settings = get_option('woocommerce_mccp_settings', array());
-        return array_key_exists('version', $settings) ? $settings['version'] : false;
+        return $this->get_option('version', false);
     }
 
     /**
@@ -241,6 +240,23 @@ trait MCCP_Utils {
         $this->update_1_2_2__1_2_3();
         $this->update_1_2_3__1_2_7();
         $this->update_1_2_7__1_2_8();
+        $this->update_1_2_8__1_2_9();
+    }
+
+    function update_1_2_8__1_2_9() {
+        if ($this->version() !== '1.2.8') {
+            return;
+        }
+        $this->save_settings_to_account();
+
+        $settings = get_option('woocommerce_mccp_settings');
+        if ( !$settings ) {
+            return;
+        }
+        $settings['version'] = '1.2.9';
+        $settings['processing_fee'] = 'percentage';
+        unset($settings['woocommerce_mccp_account']);
+        update_option('woocommerce_mccp_settings', $settings);
     }
 
     function update_1_2_7__1_2_8() {
@@ -264,7 +280,8 @@ trait MCCP_Utils {
      * @return void 
      */
     function update_1_2_3__1_2_7() {
-        if ($this->version() !== '1.2.3') {
+        $version = $this->version();
+        if ($version && !in_array($version, ['1.2.3','1.2.4','1.2.5','1.2.6'])) {
             return;
         }
         $settings = get_option('woocommerce_mccp_settings');
@@ -355,7 +372,7 @@ trait MCCP_Utils {
         if ($this->version() !== false) {
             return;
         }
-        global $wpdb, $table_prefix;
+    global $wpdb, $table_prefix;
 
         // Table update when plugin aleady installed & active
         $table = $table_prefix . DB::TABLE_INVOICE;
