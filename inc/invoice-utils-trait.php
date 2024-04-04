@@ -234,11 +234,9 @@ trait MCCP_Utils {
         foreach ($settings['currencies'] as $currency) {
             $params['transfer-key'] = $account->{'transfer-key'};
             $params['currency'] = $currency->abbr;
-            if ($currency->address) {
-                $params['destinations'][] = array("address" => $currency->address);
-            }
+            $params['destinations'] = $currency->address ? [["address" => $currency->address]] : null;
             $params['processing-fee-policy'] = 'percentage';
-            
+
             Request::execute('patch', $endpoint, $params, true);
         }
 
