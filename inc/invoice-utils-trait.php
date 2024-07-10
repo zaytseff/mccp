@@ -123,13 +123,17 @@ trait MCCP_Utils {
     * @return void 
     */
     function payment_fields() {
+        $test_customer = $this->get_option('test_customer');
         $show_test_net = false;
-        $show_test_net = WC()->customer->get_billing_email() == $this->get_option('test_customer') ? true : false;
+
+        if (WC()->customer->get_billing_email() == $test_customer || $test_customer == '*') {
+            $show_test_net = true;
+        }
+
         if ($this->is_repayment()) {
             $order_id = $this->is_repayment();
             $order    = wc_get_order( $order_id );
             $total = $order->get_total();
-            // $show_test_net = $order->get_billing_email() == $this->get_option('test_customer') ? true : false;
         }
         else {
             $total = WC()->cart->total;
