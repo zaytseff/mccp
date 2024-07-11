@@ -247,6 +247,15 @@ trait MCCP_Utils {
         $this->update_1_2_3__1_2_7();
         $this->update_1_2_7__1_2_8();
         $this->update_1_2_8__1_2_9();
+        $this->update_1_2_9__1_2_10();
+    }
+
+    function update_1_2_9__1_2_10() {
+        if ($this->version() !== '1.2.9') {
+            return;
+        }
+    
+        $this->version_update('1.2.10');
     }
 
     function update_1_2_8__1_2_9() {
