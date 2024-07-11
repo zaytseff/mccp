@@ -193,7 +193,7 @@ trait MCCP_Admin {
             ),
             'test_customer' => array(
                 'title' => __('Test currency customer', 'mccp'),
-                'type' => 'email',
+                'type' => 'text',
                 'default' => '',
                 'placeholder' => 'user@example.com',
                 'description' => __('Enter an email of the customer to whom the test currencies will be shown.', 'mccp'),
