@@ -76,6 +76,10 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
+### Version 1.2.10 | 11/07/2024 =
+
+* Show tbts to unauthenticated users if test_customer is set to *
+
 ### Version 1.2.9 | 04/04/2024
 
 * Add settings saver when account recreated

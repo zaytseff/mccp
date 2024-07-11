@@ -2,7 +2,7 @@
 
 Contributors: zaytseff
 Tags: accept, bitcoin, litecoin, usdt, crypto
-Stable tag: 1.2.9
+Stable tag: 1.2.10
 Requires PHP: 7.4
 Tested up to: 6.5
 License: GPLv2 or later
@@ -76,6 +76,9 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 
 == Changelog ==
+
+= Version 1.2.10 | 11/07/2024 =
+- Show tbts to unauthenticated users if test_customer is set to *
 
 = Version 1.2.9 | 04/04/2024 =
 - Add settings saver when account recreated
