@@ -3,50 +3,92 @@
  * Plugin Name: Multi Crypto Currency Payment
  * Plugin URI: https://github.com/zaytseff/mccp-woo
  * Description: Multi currency crypto payments for WooCommerce. Uses Apirone Processing Provider
- * Version: 1.2.10
- * Tested up to: 6.5
+ * Version: 2.0.0
  * Author: Alex Zaytseff
  * Author URI: https://github.com/zaytseff
+ * Tested up to: 6.5
  */
 
-if (!defined('ABSPATH'))
-	exit; // Exit if accessed directly
-
-require_once('inc/apirone_api/Apirone.php');
-require_once('inc/apirone_api/Payment.php');
+defined('ABSPATH') || exit;
 
 define('MCCP_ROOT', __DIR__);
 define('MCCP_MAIN', __FILE__);
 define('MCCP_URL', plugin_dir_url(__FILE__));
 
-require_once('inc/assets-assign.php');
-require_once('inc/activate-plugin.php');
+use Apirone\SDK\Service\InvoiceQuery;
+
+if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+	return;
+}
+
+require_once(__DIR__ . '/vendor/autoload.php');
 
 // Add MCCP payment gateway to WooCommerce
-add_action ('plugin_loaded', 'mccp_payment', 0);
+// function addGateway($plugins) {
+// 	return array_merge($plugins, [WC_MCCP::class]);
+// };
+// add_filter('woocommerce_payment_gateways', 'addGateway');
+
+add_filter('woocommerce_payment_gateways', function ($plugins) {
+	return array_merge($plugins, [WC_MCCP::class]);
+});
+
+// Show settings link on plugins page
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
+	$url = admin_url('admin.php?page=wc-settings&tab=checkout&section=mccp');
+	return array_merge(['<a href="' . $url . '">' . __('Settings') . '</a>'], $links);
+});
 
 
-/**
- * Wrapper for MCCP payment gateway class
- * 
- * @return void 
- */
-function mccp_payment() {
-	if (!class_exists('WC_Payment_Gateway'))
-		return;
-	if (class_exists('WC_MCCP'))
-		return;
+if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+    add_action( 'plugins_loaded', function() {
+        require_once __DIR__ . '/inc/class-mccp-gateway.php';
+    });
+}
+else {
+    add_action( 'admin_notices', function() {
+        ?>
+        <div class="notice notice-error">
+            <p><?php esc_attr_e( 'Please activate', 'woocommerce' );?> <a href="https://wordpress.org/plugins/woocommerce/"><?php esc_attr_e( 'Woocommerce', 'woocommerce' ); ?></a> <?php esc_attr_e( 'to use MCCP gateway.', 'woocommerce' ); ?></p>
+        </div>
+        <?php    
+    } );
+}
 
-	require_once 'inc/invoice-class.php';
+add_action('admin_enqueue_scripts', function() {
+    if (isset($_GET['page']) && $_GET['page'] === 'wc-settings' && isset($_GET['tab']) && $_GET['tab'] === 'checkout' && isset($_GET['section']) && $_GET['section'] === 'mccp') {
+        wp_enqueue_style( 'mccp_style', MCCP_URL . 'assets/mccp-admin.css' );
+    }
+});
 
-	/**
-	 * Add MCCP gateway to WooCommerce
-	 */
-	function add_mccp_gateway($methods) {
-			$methods[] = 'WC_MCCP';
-			return $methods;
-	}
-	add_filter('woocommerce_payment_gateways', 'add_mccp_gateway');
+add_action('get_footer', function() {
+        wp_enqueue_style ( 'mccp_style_invoice', MCCP_URL . 'vendor/apirone/apirone-sdk-php/src/assets/css/styles.min.css' );
+        wp_enqueue_script('mccp_script_invoice', MCCP_URL . '/vendor/apirone/apirone-sdk-php/src/assets/js/script.min.js', array( 'jquery'));
+        wp_enqueue_style( 'mccp_style', MCCP_URL . 'assets/mccp.css' );
+    }
+);
+
+if (!function_exists('mccp_activate')) {
+    function mccp_activate() {
+        global $wpdb;
+        
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+        $sql = InvoiceQuery::createInvoicesTable($wpdb->prefix, $wpdb->charset, $wpdb->collate);
+
+        dbDelta($sql);
+
+        if ($wpdb->last_error && class_exists('WC_Logger')) {
+            $log = new WC_Logger();
+            $log->error($wpdb->last_error, ['source' => 'mccp_install_error']);    
+        }
+
+        // Remove unused options from v1.0.0
+        if ( get_option('mccp_db_version' ) ){
+            delete_option('mccp_db_version');
+        }
+    }
+    register_activation_hook( MCCP_MAIN, 'mccp_activate' );
 }
 
 /**

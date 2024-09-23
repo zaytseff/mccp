@@ -237,7 +237,7 @@ trait MCCP_Utils {
      *
      * @return void 
      */
-    function update() {
+    function do_update() {
         $this->update_1_0_0__1_1_0();
         $this->update_1_1_0__1_1_1();
         $this->update_1_1_1__1_2_0();
