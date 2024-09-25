@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) exit;
 
 use Apirone\SDK\Invoice;
 use Apirone\SDK\Model\Settings;
-
+use Apirone\SDK\Model\Settings\Currency;
 
 class WC_MCCP extends WC_Payment_Gateway
 {
@@ -32,11 +32,20 @@ class WC_MCCP extends WC_Payment_Gateway
     {
         $this->init_settings();
         $this->do_update();
+
+        $this->options = Settings::fromJson($this->get_option('options'));
     }
 
     public function invoice_receipt($order_id) {
         echo(__FUNCTION__);
     }
+
+
+    public function payment_fields()
+    {
+        echo 'Coming soon';   
+    }
+
     /**
      * Payment process handler
      * 
@@ -44,7 +53,6 @@ class WC_MCCP extends WC_Payment_Gateway
      * @return array 
      */
     public function process_payment($order_id) {
-    pa(__FUNCTION__);
         $order = new WC_Order($order_id);
         // Create redirect URL
         $redirect = $order->get_checkout_payment_url(true);
@@ -91,16 +99,6 @@ class WC_MCCP extends WC_Payment_Gateway
                 <hr/>
             </div>
         <?php
-        $plugin_data = get_plugin_data(MCCP_MAIN);
-        $ver_pl = get_plugin_data(MCCP_MAIN)['Version'];
-        $ver_db = $this->get_option('version');
-        $res = version_compare($ver_pl, $ver_db);
-        pa([
-            'ver_pl' => $ver_pl,
-            'ver_db' => $ver_db,
-            'res' => $res,
-        ]);
-
     }
 
     public function mccp_init_form_fields() {
@@ -246,13 +244,8 @@ class WC_MCCP extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    public function assets()
-    {
-
-    }
-
     public function show_invoice_admin_info($order) {
-        if ($order->payment_method == 'mccp') {
+        if (is_admin() && $order->payment_method == 'mccp') {
             echo '<h3>' . __('Payment details', 'mccp') . '</h3>';
             $invoices = WC_MCCP::get_order_invoices($order->get_id());
             if ($invoices) {
@@ -278,309 +271,57 @@ class WC_MCCP extends WC_Payment_Gateway
 
     public function do_update()
     {
-        // $plugin_data = get_plugin_data(MCCP_MAIN);
-        // $version = get_plugin_data(MCCP_MAIN)['Version'];
-        // pa($this->settings);
-        
-        // $settings = get_option('woocommerce_mccp_settings');
-        $version = $this->settings['version'];
-        // pa($version);
-        // $res = version_compare($code_version, $settings['version']);
+        $version = $this->get_option('version', false);
+        $code_version = get_plugin_data(MCCP_MAIN)['Version'];
 
-        // if ($res == 0) {
-        //     return;
-        // }
-        // return;
-
-        // $version = "3.4.0.1";
-        // if (version_compare($version, "3.1.0", ">=") && version_compare($version, "3.3.5.1", "<=")) {
-        //     //Version in range
-        // }
-
-
-        // Update range from 1.1.1 to 1.2.7 - unset backlink
-        if (version_compare($version, '1.1.1', '>=') && version_compare($version, '1.2.7', '<=')) {
-        
+        if(version_compare($code_version, $version, '=')) {
+            return;
         }
 
-        // Update from 1.0.0 to 1.1.0 - modify db
-        if ($version == false) {
-            return; 
+        // Update to 2.0.0 - Move plugin to SDK
+        $account = get_option('woocommerce_mccp_account');
+        $options = ($account) ? Settings::fromExistingAccount($account->account, $account->{'transfer-key'}) : Settings::init();
+
+        if (version_compare($version, '1.1.0', '>=') && version_compare($version, '1.2.10', '<=')) {
+            // Update table - rename order_id to order
             global $wpdb, $table_prefix;
+            // $table = $table_prefix . 'apirone_mccp';
+            $query = sprintf("ALTER TABLE `%sapirone_mccp` RENAME COLUMN `order_id` to `order`", $table_prefix);
+            $wpdb->query($query);
 
-            // Table update when plugin already installed & active
-            $table = $table_prefix . 'apirone_mccp';
-            $is_metadata = sprintf('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = "%s" AND column_name = "meta"', $table);
-            $row = $wpdb->get_results($is_metadata);
-            if(empty($row)){
-                $add_metadata = sprintf("ALTER TABLE `%s` ADD `meta` text NULL AFTER `details`", $table);
-                $wpdb->query($add_metadata);
-            }
+            // Move options
+            $options->setMerchant($this->settings['merchant']);
+            $options->setFactor((float) $this->settings['factor']);
+            $options->setTimeout((int) $this->settings['timeout']);
+            $options->setLogo($this->settings['apirone_logo']);
+            $options->setDebug($this->settings['debug']);
 
-            // Old version settings update
-            $settings = get_option('woocommerce_mccp_settings');
-            if ( !$settings )
-                return;
-
-            $apirone_account = $this->mccp_account();
-
-            // Map old currencies
-            foreach (Apirone::currencyList() as $apirone_currency) {
-                $currency = $this->mccp_currency($apirone_currency, $apirone_account);
-                if (array_key_exists($apirone_currency->abbr, (array) $settings['currencies'])) {
-                    $old_currency = $settings['currencies'][$apirone_currency->abbr];
-                    if (gettype($old_currency) === 'array') { // Update from version 1.0.0
-                        if ($old_currency['address']) {
-                            $currency->address = $old_currency['address'];
-                            $result = Apirone::setTransferAddress($apirone_account, $currency->abbr, $old_currency['address']);
-                            if ($result) {
-                                $currency->valid = 1;
-                            }
-                        }
-                        $currency->enabled = ($old_currency['enabled']) ? 1 : 0;
-                    }
-                    else { // Clear install of 1.1.1
-                        $currency = $old_currency;
-                    }
-                }
-                $mccp_currencies[$apirone_currency->abbr] = $currency;
-
-            }
-            // Update currencies
-            $settings['currencies'] = $mccp_currencies;
-            // Add new params
-            $settings['factor'] = '1';
-            $settings['timeout'] = '1800';
-            $settings['check_timeout'] = '10';
-            $settings['backlink'] = '';
-            $settings['apirone_logo'] = 'yes';
-            $settings['version'] = '1.1.0';
-            
-            // Unset unused
-            unset($settings['count_confirmations']);
-            unset($settings['debug']);
-            unset($settings['wallets']);
-            unset($settings['statuses']);
-
-            update_option('woocommerce_mccp_settings', $settings);
-            delete_option('woocommerce_mccp_wallets');
+            $options->setExtra('test_customer', $this->settings['test_customer']);
+            $options->setExtra('processing_fee', $this->settings['processing_fee']);            
         }
 
-    }
-
-    //******************************************************************* */
-
-    /**
-     * Plugin version update entry point
-     *
-     * @return void 
-     */
-    function _update() {
-        $this->update_1_0_0__1_1_0();
-        $this->update_1_1_0__1_1_1();
-        $this->update_1_1_1__1_2_0();
-        $this->update_1_2_0__1_2_1();
-        $this->update_1_2_1__1_2_2();
-        $this->update_1_2_2__1_2_3();
-        $this->update_1_2_3__1_2_7();
-        $this->update_1_2_7__1_2_8();
-        $this->update_1_2_8__1_2_9();
-        $this->update_1_2_9__1_2_10();
-    }
-
-    function update_1_2_9__1_2_10() {
-        if ($this->version() !== '1.2.9') {
-            return;
-        }
-    
-        $this->version_update('1.2.10');
-    }
-
-    function update_1_2_8__1_2_9() {
-        if ($this->version() !== '1.2.8') {
-            return;
-        }
-        $this->save_settings_to_account();
-
-        $this->version_update('1.2.9');
-    }
-
-    function update_1_2_7__1_2_8() {
-        if ($this->version() !== '1.2.7') {
-            return;
-        }
-        $this->save_settings_to_account();
-
-        $settings = get_option('woocommerce_mccp_settings');
-        if ( !$settings ) {
-            return;
-        }
-        $settings['processing_fee'] = 'percentage';
-        unset($settings['woocommerce_mccp_account']);
-        update_option('woocommerce_mccp_settings', $settings);
-
-        $this->version_update('1.2.8');
-    }
-
-    /**
-     * Update plugin from 1.2.3 to 1.2.7
-     * @return void 
-     */
-    function update_1_2_3__1_2_7() {
-        if (in_array($this->version(), ['1.2.3','1.2.4','1.2.5','1.2.6'])) {
-            $this->version_update('1.2.7');
-
-            $settings = get_option('woocommerce_mccp_settings');
-            unset($settings['backlink']);
-            update_option('woocommerce_mccp_settings', $settings);
-        }
-    }
-
-    /**
-     * Update plugin from 1.2.2 to 1.2.3
-     * @return void 
-     */
-    function update_1_2_2__1_2_3() {
-        if ($this->version() !== '1.2.2') {
-            return;
-        }
-        $this->version_update('1.2.3');
-    }
-
-    /**
-     * Update plugin from 1.2.1 to 1.2.2
-     * Fix mobile layout
-     * @return void 
-     */
-    function update_1_2_1__1_2_2() {
-        if ($this->version() !== '1.2.1') {
-            return;
-        }
-        $this->version_update('1.2.2');
-    }
-
-    /**
-     * Update plugin from 1.2.0 to 1.2.1
-     * Add a message when the invoice isn't created/found.
-     * @return void 
-     */
-    function update_1_2_0__1_2_1() {
-        if ($this->version() !== '1.2.0') {
-            return;
-        }
-        $this->version_update('1.2.1');
-    }
-
-    /**
-     * Update plugin from 1.1.1 to 1.2.0
-     * Fee plan update to percentage
-     * @return void 
-     */
-    function update_1_1_1__1_2_0() {
-        if ($this->version() !== '1.1.1') {
-            return;
-        }
-        
-        $settings = get_option('woocommerce_mccp_settings');
-        if ( !$settings ) {
-            return;
-        }
-        $account = $this->mccp_account();
-        $endpoint = '/v2/accounts/' . $account->account;
-
-        foreach ($settings['currencies'] as $currency) {
-            $params['transfer-key'] = $account->{'transfer-key'};
-            $params['currency'] = $currency->abbr;
-            $params['processing-fee-policy'] = 'percentage';
-            
-            Request::execute('patch', $endpoint, $params, true);
-        }
-        $this->version_update('1.2.0');
-    }
-
-    /**
-     * Update plugin from 1.1.0 to 1.1.1
-     *
-     * @return void 
-     */
-    function update_1_1_0__1_1_1() {
-        if ($this->version() !== '1.1.0') {
-            return;
-        }
-        $this->version_update('1.1.1');
-    }
-
-    /**
-     * Update plugin from 1.0.0 to 1.1.0
-     *
-     * @return void 
-     */
-    function update_1_0_0__1_1_0() {
-        if ($this->version()) {
-            return;
-        }
-        global $wpdb, $table_prefix;
-
-        // Table update when plugin already installed & active
-        $table = $table_prefix . DB::TABLE_INVOICE;
-        $is_metadata = sprintf('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = "%s" AND column_name = "meta"', $table);
-        $row = $wpdb->get_results($is_metadata);
-        if(empty($row)){
-            $add_metadata = sprintf("ALTER TABLE `%s` ADD `meta` text NULL AFTER `details`", $table);
-               $wpdb->query($add_metadata);
-        }
-
-        // Old version settings update
-        $settings = get_option('woocommerce_mccp_settings');
-        if ( !$settings )
-            return;
-
-        $apirone_account = $this->mccp_account();
-
-        // Map old currencies
-        foreach (Apirone::currencyList() as $apirone_currency) {
-            $currency = $this->mccp_currency($apirone_currency, $apirone_account);
-            if (array_key_exists($apirone_currency->abbr, (array) $settings['currencies'])) {
-                $old_currency = $settings['currencies'][$apirone_currency->abbr];
-                if (gettype($old_currency) === 'array') { // Update from version 1.0.0
-                    if ($old_currency['address']) {
-                        $currency->address = $old_currency['address'];
-                        $result = Apirone::setTransferAddress($apirone_account, $currency->abbr, $old_currency['address']);
-                        if ($result) {
-                            $currency->valid = 1;
-                        }
-                    }
-                    $currency->enabled = ($old_currency['enabled']) ? 1 : 0;
-                }
-                else { // Clear install of 1.1.1
-                    $currency = $old_currency;
+        if ($version == false) {
+            // Update 1.0.0
+            $currencies = is_array($this->settings['currencies']) ? $this->settings['currencies'] : [];
+            foreach ($options->getNetworks() as $network) {
+                if (array_key_exists($network->abbr, $currencies)) {
+                    $network->setAddress($currencies[$network->abbr]['address']);
                 }
             }
-            $mccp_currencies[$apirone_currency->abbr] = $currency;
 
+            $options->saveCurrencies();
         }
-        // Update currencies
-        $settings['currencies'] = $mccp_currencies;
-        // Add new params
-        $settings['factor'] = '1';
-        $settings['timeout'] = '1800';
-        $settings['check_timeout'] = '10';
-        $settings['backlink'] = '';
-        $settings['apirone_logo'] = 'yes';
-        $settings['version'] = '1.1.0';
-        
-        // Unset unused
-        unset($settings['count_confirmations']);
-        unset($settings['debug']);
-        unset($settings['wallets']);
-        unset($settings['statuses']);
 
+        $settings['enabled'] = $this->settings['enabled'];
+        $settings['options'] = $options->toJsonString();
+        $settings['secret'] = get_option('woocommerce_mccp_secret');
+        $settings['version'] = $code_version;
+
+        $this->settings = $settings;
         update_option('woocommerce_mccp_settings', $settings);
         delete_option('woocommerce_mccp_wallets');
-    }
-
-    public function get_current_version()
-    {
-
+        delete_option('woocommerce_mccp_account');
+        delete_option('woocommerce_mccp_secret');
+        pa(__FUNCTION__);
     }
 }
