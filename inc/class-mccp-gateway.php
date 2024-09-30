@@ -31,9 +31,9 @@ class WC_MCCP extends WC_Payment_Gateway
     public function init()
     {
         $this->init_settings();
-        $this->do_update();
-
-        $this->options = Settings::fromJson($this->get_option('options'));
+        // $this->do_update();
+        
+        // $this->options = Settings::fromJson(get_option('woocommerce_mccp_settings')['options']);
     }
 
     public function invoice_receipt($order_id) {
@@ -69,18 +69,16 @@ class WC_MCCP extends WC_Payment_Gateway
 
     public function process_admin_options()
     {
-        $this->mccp_init_form_fields();
+        $this->set_form_fields();
         return parent::process_admin_options();
+
     }
     
-    public function get_option($key, $empty_value = null)
-    {
-        return parent::get_option($key, $empty_value = null);        
-    }
-
     public function admin_options() {
         global $wp_version;
-        $this->mccp_init_form_fields();
+        $this->set_form_fields();
+        $this->do_update();
+        // pa($post_data = $this->get_post_data());
         ?>
             <h3><?php _e('Multi Crypto Currency Payment Gateway', 'mccp'); ?></h3>
             <div><?php _e('This plugin uses the Apirone crypto processing service.', 'mccp'); ?> <a href="https://apirone.com" target="_blank"><?php _e('Details'); ?></a></div>
@@ -101,7 +99,7 @@ class WC_MCCP extends WC_Payment_Gateway
         <?php
     }
 
-    public function mccp_init_form_fields() {
+    public function set_form_fields() {
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('On/off', 'mccp'),
@@ -134,7 +132,7 @@ class WC_MCCP extends WC_Payment_Gateway
                 'desc_tip' => true,
                 'custom_attributes' => array('min' => 0,),
             ),
-            'currencies' => array(
+            'networks' => array(
                 'type' => 'currencies_list',
                 'description' => __('List of available cryptocurrencies processed by Apirone', 'mccp'),
                 'desc_tip' => true,
@@ -182,53 +180,50 @@ class WC_MCCP extends WC_Payment_Gateway
     * @return string|false 
     */
     public function generate_currencies_list_html ($key, $data) {
-        return;
         ob_start();
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label><?php _e('Currencies', 'mccp'); ?><?php echo $this->get_tooltip_html( $data ); // WPCS: XSS ok. ?></label>
+                <label><?php _e('Networks & tokens', 'mccp'); ?><?php echo $this->get_tooltip_html( $data ); // WPCS: XSS ok. ?></label>
             </th>
             <td class="forminp" id="mccp-order_states">
                 <div class="table-wrapper">
                     <table class="form-table">
                         <tbody>
                         <?php
-                        foreach($this->mccp_currencies() as $currency) : ?>
+                        foreach($this->options->getNetworks() as $network) : ?>
+                            <?php $tokens = $network->getTokens($this->options->getCurrencies()); 
+                                $blockchain = ($tokens) ? __(' Blockchain', 'mccp') : '';
+                            ?>
                             <tr valign="middle" class="single_select_page">
                                 <th scope="row" class="titledesc">
-                                    <label for="mccp_<?php echo esc_html( $currency->abbr ); ?>" class="currency-label">
-                                    <div class="<?php echo $this->currency_icon_wrapper($currency) ?>">
-                                        <img src="<?php echo Apirone::currencyIcon($currency->abbr); ?>" alt="<?php echo esc_html( $currency->name ); ?>" class="currency-icon">
-                                    </div>
-                                    <?php echo esc_html( $currency->name ); ?>
+                                    <label for="mccp_<?php echo esc_html( $network->getAbbr() ); ?>" class="currency-label">
+                                        <span class="currency-icon <?php echo $network->getAbbr(); ?>"></span>
+                                        <span style="position:relative">
+                                        <?php echo esc_html( $network->getName() . $blockchain ); ?>
+                                        <?php if ($network->isTestnet()) : ?>
+                                        <?php echo wc_help_tip(__('Use this currency for test purposes only! This currency shown for admin and "test currency customer" (if set) is only on the front end of Woocommerce!')); ?>
+                                        <?php endif; ?>
+                                        </span>
 
-                                    <?php echo wc_help_tip(sprintf(__('Enter valid address to activate <b>%s</b> currency', 'mccp'), $currency->name)); ?>
+                                    <?php echo wc_help_tip(sprintf(__('Enter valid address to activate <b>%s</b> blockchain', 'mccp'), $network->getName())); ?>
                                     </label>
                                 </th>
                                 <td class="forminp">
-                                    <input type="text" name="woocommerce_mccp_currencies[<?php echo esc_html( $currency->abbr ); ?>][address]" class="input-text regular-input" 
-                                        value="<?php echo esc_html( $currency->address ); ?>">
-                                    <?php if ( $currency->address ) : ?>
-                                    <input type="checkbox" name="woocommerce_mccp_currencies[<?php echo esc_html( $currency->abbr ); ?>][enabled]" class="currency-enabled" 
-                                        <?php echo $currency->enabled ? ' checked' : ''; ?>
-                                        <?php echo !$currency->valid ? ' disabled' : ''; ?>
-                                    >
-                                    <?php if( $currency->address) : ?>
-                                        <?php if( $currency->valid ) : ?>
-                                        <span class="valid">
-                                            <?php _e('Use currency', 'mccp'); ?>
-                                        </span>
-                                        <?php else: ?>
-                                        <span class="not-valid">
-                                            <?php _e('Address is not valid', 'mccp'); ?>
-                                        </span>
-                                        <?php endif;?>
-                                    <?php endif;?>
-                                    <?php endif;?>
-                                    <?php if ($currency->testnet) : ?>
-                                        <div class="testnet-info"><span class="testnet-info__message"><?php _e('WARNING: Test currency', 'mccp'); ?></span>
-                                        <?php echo wc_help_tip(__('Use this currency for test purposes only! This currency shown for admin and "test currency customer" (if set) is only on the front end of Woocommerce!')); ?></div>
+                                    <input type="text" name="woocommerce_mccp_networks[<?php echo esc_html( $network->getAbbr() ); ?>]" class="input-text regular-input" value="<?php echo esc_html( $network->getAddress() ); ?>">
+                                    <?php  if ($tokens) : ?>
+                                        <div class="tokens_wrapper">
+                                        <?php $tokens = array_merge([$network], $tokens); ?>
+                                            <?php foreach ($tokens as $token) : ?>
+                                            <div class="token_item">
+                                                <span class="currency-icon <?php echo str_replace('@', '_', esc_html($token->getAbbr())); ?>"></span>
+                                                <label for="woocommerce_mccp_tokens[<?php echo esc_html($token->getAbbr()); ?>]">
+					                                <input type="checkbox" name="woocommerce_mccp_tokens[<?php echo esc_html($token->getAbbr()); ?>]"
+                                                    id="woocommerce_mccp_tokens[<?php echo esc_html($token->getAbbr()); ?>]">
+                                                    <?php echo $token->getName(); ?>
+                                                </label>
+                                            </div>
+                                            <?php endforeach; ?>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -244,6 +239,10 @@ class WC_MCCP extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
+    public function validate_currencies_list_field($k, $v) {
+        return $v;
+    }
+    
     public function show_invoice_admin_info($order) {
         if (is_admin() && $order->payment_method == 'mccp') {
             echo '<h3>' . __('Payment details', 'mccp') . '</h3>';
@@ -271,7 +270,8 @@ class WC_MCCP extends WC_Payment_Gateway
 
     public function do_update()
     {
-        $version = $this->get_option('version', false);
+        // $version = $this->get_option('version', false);
+        $version = get_option('woocommerce_mccp_settings', false)['version'];
         $code_version = get_plugin_data(MCCP_MAIN)['Version'];
 
         if(version_compare($code_version, $version, '=')) {
@@ -280,7 +280,11 @@ class WC_MCCP extends WC_Payment_Gateway
 
         // Update to 2.0.0 - Move plugin to SDK
         $account = get_option('woocommerce_mccp_account');
-        $options = ($account) ? Settings::fromExistingAccount($account->account, $account->{'transfer-key'}) : Settings::init();
+        $this->options = Settings::fromJson($account);
+
+        // pa( serialize($this->settings['options']));
+        // update_option('woocommerce_mccp_options', $this->settings['options']->toJsonString());
+        // $options = ($account) ? Settings::fromExistingAccount($account->account, $account->{'transfer-key'}) : Settings::init();
 
         if (version_compare($version, '1.1.0', '>=') && version_compare($version, '1.2.10', '<=')) {
             // Update table - rename order_id to order
@@ -289,39 +293,38 @@ class WC_MCCP extends WC_Payment_Gateway
             $query = sprintf("ALTER TABLE `%sapirone_mccp` RENAME COLUMN `order_id` to `order`", $table_prefix);
             $wpdb->query($query);
 
-            // Move options
-            $options->setMerchant($this->settings['merchant']);
-            $options->setFactor((float) $this->settings['factor']);
-            $options->setTimeout((int) $this->settings['timeout']);
-            $options->setLogo($this->settings['apirone_logo']);
-            $options->setDebug($this->settings['debug']);
+            // // Move options
+            // $options->setMerchant($this->settings['merchant']);
+            // $options->setFactor((float) $this->settings['factor']);
+            // $options->setTimeout((int) $this->settings['timeout']);
+            // $options->setLogo($this->settings['apirone_logo']);
+            // $options->setDebug($this->settings['debug']);
 
-            $options->setExtra('test_customer', $this->settings['test_customer']);
-            $options->setExtra('processing_fee', $this->settings['processing_fee']);            
+            // $options->setExtra('test_customer', $this->settings['test_customer']);
+            // $options->setExtra('processing_fee', $this->settings['processing_fee']);            
         }
 
         if ($version == false) {
             // Update 1.0.0
-            $currencies = is_array($this->settings['currencies']) ? $this->settings['currencies'] : [];
-            foreach ($options->getNetworks() as $network) {
-                if (array_key_exists($network->abbr, $currencies)) {
-                    $network->setAddress($currencies[$network->abbr]['address']);
-                }
-            }
+            // $currencies = is_array($this->settings['currencies']) ? $this->settings['currencies'] : [];
+            // foreach ($options->getNetworks() as $network) {
+            //     if (array_key_exists($network->abbr, $currencies)) {
+            //         $network->setAddress($currencies[$network->abbr]['address']);
+            //     }
+            // }
 
-            $options->saveCurrencies();
+            // $options->saveCurrencies();
         }
 
-        $settings['enabled'] = $this->settings['enabled'];
-        $settings['options'] = $options->toJsonString();
-        $settings['secret'] = get_option('woocommerce_mccp_secret');
-        $settings['version'] = $code_version;
+        // $settings['enabled'] = $this->settings['enabled'];
+        // // $settings['options'] = $options->toJsonString();
+        // $settings['secret'] = get_option('woocommerce_mccp_secret');
+        // $settings['version'] = $code_version;
 
-        $this->settings = $settings;
-        update_option('woocommerce_mccp_settings', $settings);
-        delete_option('woocommerce_mccp_wallets');
-        delete_option('woocommerce_mccp_account');
-        delete_option('woocommerce_mccp_secret');
-        pa(__FUNCTION__);
+        unset($this->settings['options']);
+        update_option('woocommerce_mccp_settings', $this->settings);
+        // delete_option('woocommerce_mccp_wallets');
+        // delete_option('woocommerce_mccp_account');
+        // delete_option('woocommerce_mccp_secret');
     }
 }
