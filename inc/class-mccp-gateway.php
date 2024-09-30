@@ -78,7 +78,6 @@ class WC_MCCP extends WC_Payment_Gateway
         global $wp_version;
         $this->set_form_fields();
         $this->do_update();
-        // pa($post_data = $this->get_post_data());
         ?>
             <h3><?php _e('Multi Crypto Currency Payment Gateway', 'mccp'); ?></h3>
             <div><?php _e('This plugin uses the Apirone crypto processing service.', 'mccp'); ?> <a href="https://apirone.com" target="_blank"><?php _e('Details'); ?></a></div>
@@ -133,7 +132,13 @@ class WC_MCCP extends WC_Payment_Gateway
                 'custom_attributes' => array('min' => 0,),
             ),
             'networks' => array(
-                'type' => 'currencies_list',
+                'type' => 'networks',
+                'description' => __('List of available cryptocurrencies processed by Apirone', 'mccp'),
+                'desc_tip' => true,
+                'default' => [],
+            ),
+            'tokens' => array(
+                'type' => 'tokens',
                 'description' => __('List of available cryptocurrencies processed by Apirone', 'mccp'),
                 'desc_tip' => true,
                 'default' => [],
@@ -179,7 +184,7 @@ class WC_MCCP extends WC_Payment_Gateway
     * @param mixed $data 
     * @return string|false 
     */
-    public function generate_currencies_list_html ($key, $data) {
+    public function generate_networks_html ($key, $data) {
         ob_start();
         ?>
         <tr valign="top">
@@ -239,10 +244,18 @@ class WC_MCCP extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    public function validate_currencies_list_field($k, $v) {
-        return $v;
+    public function generate_tokens_html ($key, $data) {
+        return;
     }
-    
+
+    public function validate_networks_field($k, $v) {
+        return array_filter($v);
+    }
+
+    public function validate_tokens_field($k, $v) {
+        return;
+    }
+
     public function show_invoice_admin_info($order) {
         if (is_admin() && $order->payment_method == 'mccp') {
             echo '<h3>' . __('Payment details', 'mccp') . '</h3>';
