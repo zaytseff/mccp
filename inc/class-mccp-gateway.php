@@ -3,12 +3,12 @@
 if (!defined('ABSPATH')) exit;
 
 use Apirone\SDK\Invoice;
-use Apirone\SDK\Model\Settings;
+use Apirone\SDK\Model\Settings as Options;
 use Apirone\SDK\Model\Settings\Currency;
 
 class WC_MCCP extends WC_Payment_Gateway
 {
-    public Settings $options;
+    public Options $options;
 
     public function __construct()
     {
@@ -108,7 +108,17 @@ class WC_MCCP extends WC_Payment_Gateway
                 'description' => __('Activate/deactivate MCCP gateway', 'mccp'),
                 'desc_tip' => true,
             ),
-            'merchant' => array(
+            'options' => array(
+                'type' => 'options',
+                'description' => '',
+                'default' => [],
+            ),
+        );
+    }
+
+    private function options_fields() {
+        return array(
+                'merchant' => array(
                 'title' => __('Merchant name', 'mccp'),
                 'type' => 'text',
                 'default' => '',
@@ -177,6 +187,19 @@ class WC_MCCP extends WC_Payment_Gateway
         );
     }
 
+    public function generate_options_html ($key, $data) {
+        $fields = $this->options_fields();
+        ob_start();
+        echo $this->generate_text_html('merchant', $fields['merchant']);
+        echo $this->generate_text_html('test_customer', $fields['test_customer']);
+        echo $this->generate_text_html('timeout', $fields['timeout']);
+        echo $this->generate_networks_html('networks', $fields['networks']);
+        echo $this->generate_select_html('processing_fee', $fields['processing_fee']);
+        echo $this->generate_text_html('factor', $fields['factor']);
+        echo $this->generate_checkbox_html('apirone_logo', $fields['apirone_logo']);
+        echo $this->generate_checkbox_html('debug', $fields['debug']);
+        return ob_get_clean();
+    }
     /**
     * Generate currencies list options for admin page
     *
@@ -244,16 +267,8 @@ class WC_MCCP extends WC_Payment_Gateway
         return ob_get_clean();
     }
 
-    public function generate_tokens_html ($key, $data) {
-        return;
-    }
-
     public function validate_networks_field($k, $v) {
         return array_filter($v);
-    }
-
-    public function validate_tokens_field($k, $v) {
-        return;
     }
 
     public function show_invoice_admin_info($order) {
@@ -293,7 +308,8 @@ class WC_MCCP extends WC_Payment_Gateway
 
         // Update to 2.0.0 - Move plugin to SDK
         $account = get_option('woocommerce_mccp_account');
-        $this->options = Settings::fromJson($account);
+        // $this->options = Settings::fromJson($account);
+        $this->options = Options::fromJson($account);
 
         // pa( serialize($this->settings['options']));
         // update_option('woocommerce_mccp_options', $this->settings['options']->toJsonString());
