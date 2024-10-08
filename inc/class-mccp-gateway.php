@@ -30,8 +30,8 @@ class WC_MCCP extends WC_Payment_Gateway
     }
     public function init()
     {
-        $this->do_update();
         $this->init_settings();
+        $this->do_update();
         $this->get_options();
     }
     // Load existing og create new
@@ -133,13 +133,13 @@ class WC_MCCP extends WC_Payment_Gateway
         $this->options->setDebug($this->get_field_value('debug', $options['debug'], $post_data) == 'yes' ? true : false);
 
         // set addresses & tokens
+        $policy = $this->options->getExtra('processing_fee');
         $networks_data = $this->get_field_value('networks', $options['networks'], $post_data);
         $tokens_data = $this->get_field_value('tokens', $options['tokens'], $post_data);
 
         foreach ($this->options->getNetworks() as $network) {
-
             $this->options->getCurrency($network->abbr)->parseAbbr()->setAddress($networks_data[$network->abbr]);
-            $this->options->getCurrency($network->abbr)->setPolicy($this->options->getExtra('processing_fee'));
+            $this->options->getCurrency($network->abbr)->setPolicy($policy);
             if ($network->isNetwork()) {
                 $tokens = $network->getTokens($this->options->currencies);
                 if($tokens) {
@@ -147,7 +147,7 @@ class WC_MCCP extends WC_Payment_Gateway
                     foreach ($tokens as $token) {
                         $this->options->getCurrency($token->abbr)->setPolicy($this->options->getExtra('processing_fee'));
                         $this->options->getCurrency($token->abbr)->setAddress($network->getAddress());
-                        $this->options->setExtra($token->abbr, array_key_exists($token->abbr, $tokens_data) ? 1 : 0);
+                        $this->options->setExtra($token->abbr, array_key_exists($token->abbr, $tokens_data) ? true : false);
                     }
                 }
             }            
@@ -337,7 +337,8 @@ class WC_MCCP extends WC_Payment_Gateway
                                 </th>
                                 <td class="forminp">
                                     <input type="text" name="woocommerce_mccp_networks[<?php echo esc_html( $network->getAbbr() ); ?>]" class="input-text regular-input" value="<?php echo esc_html( $network->getAddress() ); ?>">
-                                    <?php  if ($tokens) : ?>
+
+                                    <?php  if ($tokens && $network->getAddress()) : ?>
                                         <div class="tokens_wrapper">
                                         <?php $tokens = array_merge([$network], $tokens); ?>
                                             <?php foreach ($tokens as $token) : ?>
@@ -350,6 +351,7 @@ class WC_MCCP extends WC_Payment_Gateway
                                                     checked="checked"
                                                     <?php endif; ?>>
                                                     <?php echo $token->getName(); ?>
+                                                    <?php echo wc_help_tip(sprintf(__('Show/hide <b>%s</b> from currency selector', 'mccp'), $token->getName())); ?>
                                                 </label>
                                             </div>
                                             <?php endforeach; ?>
@@ -406,30 +408,32 @@ class WC_MCCP extends WC_Payment_Gateway
 
     public function do_update()
     {
-        return;
-        $settings = get_option('woocommerce_mccp_settings', false); 
+        $settings = get_option('woocommerce_mccp_settings', false);
         if (!$settings) {
             return;
         }
 
-        $version = $settings['version'];
+        $version = $settings['version'] ?? false;
         $code_version = get_plugin_data(MCCP_MAIN)['Version'];
 
         if(version_compare($code_version, $version, '=')) {
             return;
         }
 
-        // Update to 2.0.0 - Move plugin to SDK
-        $account = get_option('woocommerce_mccp_account', null);
-        $options = ($account) ? Options::fromJson($account) : Options::init()->createAccount();
-
-        if ((version_compare($version, '1.1.0', '>=') && version_compare($version, '1.2.10', '<=')) && $account !== null) {
-            // Update table - rename order_id to order
+        // Up to 2.0.0 - Move plugin to SDK
+        if (version_compare($version, '1.1.0', '>=') && version_compare($version, '1.2.10', '<=')) {
+            // Rename & update existing table
             global $wpdb, $table_prefix;
-            $query = "ALTER TABLE `". $table_prefix . "apirone_mccp` RENAME COLUMN `order_id` to `order`";
-            $wpdb->query($query);
+            $query = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '" . DB_NAME . "' AND table_name = '" . $table_prefix . "apirone_mccp';";
+            $rows = $wpdb->get_results($query);
+            if(!empty($rows)){
+                $rename_table = "RENAME TABLE " . DB_NAME . "." . $table_prefix. "apirone_mccp TO " . DB_NAME . "." . $table_prefix. "apirone_invoice;";
+                $wpdb->query($rename_table);
+                $rename_column = "ALTER TABLE " . DB_NAME . "." . $table_prefix. "apirone_invoice RENAME COLUMN `order_id` TO `order`;";
+                $wpdb->query($rename_column);
+            }
 
-            // // Move options
+            // Move options
             $options->setMerchant($settings['merchant']);
             $options->setFactor((float) $settings['factor']);
             $options->setTimeout((int) $settings['timeout']);
@@ -442,25 +446,38 @@ class WC_MCCP extends WC_Payment_Gateway
 
         if ($version == false) {
             // Update 1.0.0
+            mccp_create_table();
+
             $currencies = is_array($settings['currencies']) ? $settings['currencies'] : [];
             foreach ($options->getNetworks() as $network) {
                 if (array_key_exists($network->abbr, $currencies)) {
-                    $network->setAddress($currencies[$network->abbr]['address']);
+                    $network->setAddress($currencies[$network->abbr]['address'])->setPolicy('percentage')->parseAbbr();
+                    if ($network->isNetwork()) {
+                        $tokens = $network->getTokens($options->currencies);
+                        if($tokens) {
+                            $tokens = array_merge([$network], $tokens);
+                            foreach ($tokens as $token) {
+                                $options->getCurrency($token->abbr)->setPolicy('percentage');
+                                $options->getCurrency($token->abbr)->setAddress($network->getAddress());
+                                $options->setExtra($token->abbr, true);
+                            }
+                        }
+                    }            
                 }
             }
-
             $options->saveCurrencies();
         }
 
+        unset($settings['currencies']);
         $settings['enabled'] = $this->settings['enabled'];
-        // // $settings['options'] = $options->toJsonString();
-        // $settings['secret'] = get_option('woocommerce_mccp_secret');
-        // $settings['version'] = $code_version;
+        $settings['options'] = $options->toJson();
+        $settings['secret'] = $settings['secret'] ?? get_option('woocommerce_mccp_secret');
+        $settings['version'] = $code_version;
 
-        unset($this->settings['options']);
-        // update_option('woocommerce_mccp_settings', $this->settings);
-        // delete_option('woocommerce_mccp_wallets');
-        // delete_option('woocommerce_mccp_account');
-        // delete_option('woocommerce_mccp_secret');
+        update_option('woocommerce_mccp_settings', $settings);
+        delete_option('woocommerce_mccp_wallets');
+        delete_option('woocommerce_mccp_account');
+        delete_option('woocommerce_mccp_secret');
+        $this->init_settings();
     }
 }

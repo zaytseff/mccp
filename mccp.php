@@ -23,12 +23,6 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
 
 require_once(__DIR__ . '/vendor/autoload.php');
 
-// Add MCCP payment gateway to WooCommerce
-// function addGateway($plugins) {
-// 	return array_merge($plugins, [WC_MCCP::class]);
-// };
-// add_filter('woocommerce_payment_gateways', 'addGateway');
-
 add_filter('woocommerce_payment_gateways', function ($plugins) {
 	return array_merge($plugins, [WC_MCCP::class]);
 });
@@ -68,8 +62,8 @@ add_action('get_footer', function() {
     }
 );
 
-if (!function_exists('mccp_activate')) {
-    function mccp_activate() {
+if (!function_exists('mccp_create_table')) {
+    function mccp_create_table() {
         global $wpdb;
         
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -88,7 +82,7 @@ if (!function_exists('mccp_activate')) {
             delete_option('mccp_db_version');
         }
     }
-    register_activation_hook( MCCP_MAIN, 'mccp_activate' );
+    register_activation_hook( MCCP_MAIN, 'mccp_create_table' );
 }
 
 /**
