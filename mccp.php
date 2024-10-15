@@ -15,6 +15,8 @@ define('MCCP_ROOT', __DIR__);
 define('MCCP_MAIN', __FILE__);
 define('MCCP_URL', plugin_dir_url(__FILE__));
 
+use Apirone\API\Log\LoggerWrapper;
+use Apirone\SDK\Service\InvoiceDb;
 use Apirone\SDK\Service\InvoiceQuery;
 
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
@@ -84,6 +86,7 @@ if (!function_exists('mccp_create_table')) {
     }
     register_activation_hook( MCCP_MAIN, 'mccp_create_table' );
 }
+
 
 /**
  * Debug output

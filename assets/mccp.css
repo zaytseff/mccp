@@ -1,4 +1,12 @@
-.mccp-wrapper {
+.invoice-wrapper {
     height: unset;
     min-height: unset;
+    flex-direction: column;
+}
+.invoice-wrapper > .woocommerce-order {
+    width: 100%;
+}
+
+.invoice-wrapper p {
+    margin: 0;
 }
