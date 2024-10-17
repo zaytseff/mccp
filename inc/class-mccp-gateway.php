@@ -106,7 +106,9 @@ class WC_MCCP extends WC_Payment_Gateway
         $repayment = isset($_GET['repayment']) ? true : false;
         
         if ($invoice) {
-            $invoice->update();
+            if (!Render::isAjaxRequest()) {
+                $invoice->update();
+            }
             if ($repayment) {
                 $new_invoice = null;
                 // Create new invoice if expired;
@@ -137,7 +139,7 @@ class WC_MCCP extends WC_Payment_Gateway
             return;
         }
 
-        // echo Invoice::renderLoader($invoice);
+        echo Invoice::renderLoader($invoice);
         echo Render::show($invoice);
 
         return;
@@ -661,8 +663,55 @@ class WC_MCCP extends WC_Payment_Gateway
         $this->init_settings();
     }
     public function callback_handler() {
-        echo Invoice::callbackHandler();
+        $order_handler = static function($invoice) {
+            WC_MCCP::order_status_update($invoice);
+        };
+        echo Invoice::callbackHandler($order_handler);
         exit;
+    }
+
+    public static function order_status_update($invoice = null, $order = null) {
+        if ($invoice == null) {
+            return;
+        }
+        // echo $invoice;
+        $order = ($order) ?? new WC_Order($invoice->order);
+        $invoice->getMeta('order-status');
+        $last_status = $invoice->getMeta('order-status');
+        $cur_status = $order->get_status();
+        $new_status = WC_MCCP::order_status_by_invoice($invoice);
+
+        // Set status for new invoice
+        if ($last_status === false && $new_status == 'pending') {
+            if ($cur_status == 'pending') {
+                $invoice->setMeta('order-status', $new_status);
+            }
+            if ($cur_status == 'failed') {
+                $order->update_status('wc-' . $new_status);
+                $invoice->setMeta('order-status', $new_status);
+            }
+            return;
+        }
+
+        if($last_status == $cur_status && $last_status != $new_status) {
+            $order->update_status('wc-' . $new_status);
+            $invoice->setMeta('order-status', $new_status);
+        }
+
+        return;    
+    }
+
+    public static function order_status_by_invoice($invoice) {
+        $statuses = [
+            'created'   => 'pending',
+            'partpaid'  => 'pending',
+            'paid'      => 'pending',
+            'overpaid'  => 'pending',
+            'completed' => 'processing',
+            'expired'   => 'failed',
+        ];
+
+        return $statuses[$invoice->status];
     }
 
     public function render_handler() {
@@ -682,8 +731,6 @@ class WC_MCCP extends WC_Payment_Gateway
                     if ($invoice->status == 'expired' && $order->get_status() === 'failed') {
                         wc_get_template( 'checkout/thankyou.php', array( 'order' => $order ) );
                     }
-
-                    // echo $invoice->render();
                 }
                 else {
                     echo $invoice->id ? $invoice->details->statusNum() : 0;
