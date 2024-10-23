@@ -109,6 +109,7 @@ class WC_MCCP extends WC_Payment_Gateway
             if (!Render::isAjaxRequest()) {
                 $invoice->update();
             }
+            // $invoice->update();
             if ($repayment) {
                 $new_invoice = null;
                 // Create new invoice if expired;
@@ -139,7 +140,7 @@ class WC_MCCP extends WC_Payment_Gateway
             return;
         }
 
-        echo Invoice::renderLoader($invoice);
+        // echo Invoice::renderLoader($invoice);
         echo Render::show($invoice);
 
         return;
@@ -169,9 +170,7 @@ class WC_MCCP extends WC_Payment_Gateway
         try {
             $invoice->create();
         }
-        catch (Exception $e) {
-
-        }
+        catch (Exception $e) {}
 
         return $invoice;
     }
@@ -674,30 +673,23 @@ class WC_MCCP extends WC_Payment_Gateway
         if ($invoice == null) {
             return;
         }
-        // echo $invoice;
+
         $order = ($order) ?? new WC_Order($invoice->order);
-        $invoice->getMeta('order-status');
-        $last_status = $invoice->getMeta('order-status');
-        $cur_status = $order->get_status();
+
+        $saved_status = $invoice->getMeta('order-status');
+        $current_status = $order->get_status();
         $new_status = WC_MCCP::order_status_by_invoice($invoice);
 
         // Set status for new invoice
-        if ($last_status === false && $new_status == 'pending') {
-            if ($cur_status == 'pending') {
-                $invoice->setMeta('order-status', $new_status);
-            }
-            if ($cur_status == 'failed') {
-                $order->update_status('wc-' . $new_status);
-                $invoice->setMeta('order-status', $new_status);
-            }
-            return;
-        }
-
-        if($last_status == $cur_status && $last_status != $new_status) {
+        if ($saved_status == null) {
             $order->update_status('wc-' . $new_status);
             $invoice->setMeta('order-status', $new_status);
         }
 
+        if($saved_status == $current_status && $saved_status != $new_status) {
+            $order->update_status('wc-' . $new_status);
+            $invoice->setMeta('order-status', $new_status);
+        }
         return;    
     }
 
