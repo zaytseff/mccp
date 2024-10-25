@@ -177,11 +177,6 @@ class WC_MCCP extends WC_Payment_Gateway
 
     public function payment_fields()
     {
-        // if ($this->is_repayment()) {
-        //     $order_id = $this->is_repayment();
-        //     $order    = wc_get_order( $order_id );
-        //     $total = $order->get_total();
-        // }
         if (isset($_GET['pay_for_order'])) {
             $order    = wc_get_order(get_query_var('order-pay', false));
             $total = $order->get_total();
@@ -241,16 +236,6 @@ class WC_MCCP extends WC_Payment_Gateway
         }
         return $coins;
     }
-
-    // TODO: Maybe this function is not need
-    // function is_repayment () {
-    //     if (isset($_GET['pay_for_order'])) {
-    //         return get_query_var('order-pay', false);
-    //     }
-
-    //     return false;
-    // }
-
     public function get_option($key, $empty_value = null)
     {
         if(isset($this->options)) {        
@@ -346,7 +331,6 @@ class WC_MCCP extends WC_Payment_Gateway
         if ($this->get_errors()) {
             $this->display_errors();
         }   
-
         ?>
             <h3><?php _e('Multi Crypto Currency Payment Gateway', 'mccp'); ?></h3>
             <div><?php _e('This plugin uses the Apirone crypto processing service.', 'mccp'); ?> <a href="https://apirone.com" target="_blank"><?php _e('Details'); ?></a></div>
@@ -620,10 +604,31 @@ class WC_MCCP extends WC_Payment_Gateway
             $options->setLogo($settings['apirone_logo']);
             $options->setDebug($settings['debug']);
 
-            $options->setExtra('test_customer', $settings['test_customer']);
-            $options->setExtra('processing_fee', $settings['processing_fee']);            
-        }
+            $options->setExtra('test_customer', $settings['test_customer'] ?? '');
+            $options->setExtra('processing_fee', $settings['processing_fee'] ?? 'percentage');
 
+            // Set tokens as enabled if network address is set
+            $currencies = is_array($settings['currencies']) ? $settings['currencies'] : [];
+            foreach ($options->getNetworks() as $network) {
+                if (array_key_exists($network->abbr, $currencies)) {
+                    $network->setAddress($currencies[$network->abbr]->address)->setPolicy('percentage')->parseAbbr();
+                    if ($network->isNetwork()) {
+                        $tokens = $network->getTokens($options->currencies);
+                        if($tokens) {
+                            $tokens = array_merge([$network], $tokens);
+                            foreach ($tokens as $token) {
+                                $options->getCurrency($token->abbr)->setPolicy('percentage');
+                                $options->getCurrency($token->abbr)->setAddress($network->getAddress());
+                                if($token->address) {
+                                    $options->setExtra($token->abbr, true);
+                                }
+                            }
+                        }
+                    }            
+                }
+            }
+        }
+    
         if ($version == false) {
             // Update 1.0.0
             mccp_create_table();
@@ -646,20 +651,20 @@ class WC_MCCP extends WC_Payment_Gateway
                 }
             }
         }
-        
+
         $options->saveCurrencies();
 
-        unset($settings['currencies']);
+        // unset($settings['currencies']);
         $settings['enabled'] = $this->settings['enabled'];
         $settings['options'] = $options->toJson();
         $settings['secret'] = $settings['secret'] ?? get_option('woocommerce_mccp_secret');
         $settings['version'] = $code_version;
 
         update_option('woocommerce_mccp_settings', $settings);
-        delete_option('woocommerce_mccp_wallets');
-        delete_option('woocommerce_mccp_account');
-        delete_option('woocommerce_mccp_secret');
-        $this->init_settings();
+        // delete_option('woocommerce_mccp_wallets');
+        // delete_option('woocommerce_mccp_account');
+        // delete_option('woocommerce_mccp_secret');
+        // $this->init_settings();
     }
     public function callback_handler() {
         $order_handler = static function($invoice) {
