@@ -106,8 +106,10 @@ class WC_MCCP extends WC_Payment_Gateway
         $repayment = isset($_GET['repayment']) ? true : false;
         
         if ($invoice) {
-            $invoice->update();
-            WC_MCCP::order_status_update($invoice, $order);
+            if (!Render::isAjaxRequest()) {
+                $invoice->update();
+            }
+            // $invoice->update();
             if ($repayment) {
                 $new_invoice = null;
                 // Create new invoice if expired;
@@ -138,7 +140,8 @@ class WC_MCCP extends WC_Payment_Gateway
             return;
         }
 
-        echo Invoice::renderLoader($invoice);
+        // echo Invoice::renderLoader($invoice);
+        echo Render::show($invoice);
 
         return;
     }
@@ -152,6 +155,7 @@ class WC_MCCP extends WC_Payment_Gateway
         // Set invoice secret & callback URL
         $id = md5($this->get_option('secret') . $order->get_order_key());
         
+        // $callback_url = sprintf(site_url() . '?wc-api=mccp_callback&id=%s&v=%s', $id, $version);
         $invoice->callbackUrl(sprintf(site_url() . '?wc-api=mccp_callback&id=%s&v=%s', $id, $this->get_option('version')));
         $invoice->linkback($order->get_checkout_order_received_url());
 
@@ -173,6 +177,11 @@ class WC_MCCP extends WC_Payment_Gateway
 
     public function payment_fields()
     {
+        // if ($this->is_repayment()) {
+        //     $order_id = $this->is_repayment();
+        //     $order    = wc_get_order( $order_id );
+        //     $total = $order->get_total();
+        // }
         if (isset($_GET['pay_for_order'])) {
             $order    = wc_get_order(get_query_var('order-pay', false));
             $total = $order->get_total();
@@ -707,13 +716,10 @@ class WC_MCCP extends WC_Payment_Gateway
                 $offset = property_exists($params, 'offset') ? (int) $params->offset : 0;
                 header("Content-Type: text/plain");
                 $invoice = Invoice::getInvoice($id);
-                $order = new WC_Order($invoice->order);
-                if ($order->get_status() !== $this->order_status_by_invoice($invoice)) {
-                    WC_MCCP::order_status_update($invoice, $order);
-                }
                 if ($offset) {
                     Render::setTimeZoneByOffset($offset);
                     echo $invoice->render();
+                    $order = new WC_Order($invoice->order);
                     if ($invoice->status == 'expired' && $order->get_status() === 'failed') {
                         wc_get_template( 'checkout/thankyou.php', array( 'order' => $order ) );
                     }
