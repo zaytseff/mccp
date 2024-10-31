@@ -8,6 +8,7 @@ use Apirone\SDK\Model\Settings as Options;
 use Apirone\SDK\Model\Settings\Currency;
 use Apirone\SDK\Model\UserData;
 use Apirone\SDK\Service\InvoiceDb;
+use Apirone\SDK\Service\InvoiceQuery;
 use Apirone\SDK\Service\Render;
 use Apirone\SDK\Service\Utils;
 
@@ -597,6 +598,25 @@ class WC_MCCP extends WC_Payment_Gateway
                 $wpdb->query($rename_column);
             }
 
+            // Update old user-data price format for existing invoices
+            $query = "SELECT id, details FROM " . $table_prefix . "apirone_invoice";
+            $result = $wpdb->get_results($query, OBJECT);
+            if ($result) {
+                $converted = [];
+                foreach ($result as $row) {
+                    $details = json_decode($row->details);
+                    if(property_exists($details->{'user-data'}, 'price') && gettype($details->{'user-data'}->price) == 'object') {
+                        $details->{'user-data'}->price = $details->{'user-data'}->price->amount . ' ' . $details->{'user-data'}->price->currency;
+                        $converted[] = ['id' => $row->id, 'details' => json_encode($details)];
+                    }
+                }
+                if ($converted) {
+                    foreach ($converted as $row) {
+                        $wpdb->update( $table_prefix . "apirone_invoice",  ['details' =>$row['details']], ['id' => $row['id']]);
+                    }
+                }
+            }
+
             // Move options
             $options->setMerchant($settings['merchant']);
             $options->setFactor((float) $settings['factor']);
@@ -661,10 +681,10 @@ class WC_MCCP extends WC_Payment_Gateway
         $settings['version'] = $code_version;
 
         update_option('woocommerce_mccp_settings', $settings);
-        // delete_option('woocommerce_mccp_wallets');
-        // delete_option('woocommerce_mccp_account');
-        // delete_option('woocommerce_mccp_secret');
-        // $this->init_settings();
+        delete_option('woocommerce_mccp_wallets');
+        delete_option('woocommerce_mccp_account');
+        delete_option('woocommerce_mccp_secret');
+        $this->init_settings();
     }
     public function callback_handler() {
         $order_handler = static function($invoice) {

@@ -10,3 +10,14 @@
 .invoice-wrapper p {
     margin: 0;
 }
+
+.invoice .btn__copy, .invoice .btn__copy:hover, .invoice .btn__copy:focus, .invoice .btn__copy:active,
+.invoice .btn, .invoice .btn:hover, .invoice .btn:focus, .invoice .btn:active {
+    outline: none;
+    border: none;
+    border-color: unset;
+    color: unset;
+}
+.invoice .btn__copy:hover {
+    background-color: unset;
+}
