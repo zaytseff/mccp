@@ -84,7 +84,7 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 - Fixed the "lost merchant address" bug for TRON network & tokens
 
 = Version 1.2.10 | 11/07/2024 =
-- Show tbts to unauthenticated users if test_customer is set to *
+- Show tbts to unauthenticated users if test_customer is set to * (asterisk symbol)
 
 = Version 1.2.9 | 04/04/2024 =
 - Add settings saver when account recreated
