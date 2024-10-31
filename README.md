@@ -76,6 +76,15 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
+### Version 2.0.0 | 01/11/2024 =
+
+* Started using the official Apirone SDK PHP library
+* New official Apirone invoice design
+* Splitted networks & tokens on the plugin settings page
+* Fixed the "lost merchant address" bug for TRON network & tokens
+
+## Changelog
+
 ### Version 1.2.10 | 11/07/2024 =
 
 * Show tbts to unauthenticated users if test_customer is set to *
