@@ -1,0 +1,167 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "8a1ac4fe20b26308d5bee281cbd0fab6",
+    "packages": [
+        {
+            "name": "apirone/apirone-api-php",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Apirone/apirone-api-php.git",
+                "reference": "b828c3c42d56b317c2fe43279fe5c179ddf43d94"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Apirone/apirone-api-php/zipball/b828c3c42d56b317c2fe43279fe5c179ddf43d94",
+                "reference": "b828c3c42d56b317c2fe43279fe5c179ddf43d94",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=7.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Apirone\\API\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "alex",
+                    "email": "alex.zaytseff@gmail.com"
+                }
+            ],
+            "description": "Apirone API Client",
+            "homepage": "https://github.com/Apirone/apirone-api-php",
+            "keywords": [
+                "Apirone",
+                "DOGE",
+                "api",
+                "bch",
+                "bitcoin",
+                "btc",
+                "crypto",
+                "cryptocurrency",
+                "ltc"
+            ],
+            "support": {
+                "issues": "https://github.com/Apirone/apirone-api-php/issues",
+                "source": "https://github.com/Apirone/apirone-api-php/tree/1.0.2"
+            },
+            "time": "2024-02-15T07:15:35+00:00"
+        },
+        {
+            "name": "apirone/apirone-sdk-php",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Apirone/apirone-sdk-php.git",
+                "reference": "5a9b30ec85913245c3248f7a77b7ec3a3a12fbd8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Apirone/apirone-sdk-php/zipball/5a9b30ec85913245c3248f7a77b7ec3a3a12fbd8",
+                "reference": "5a9b30ec85913245c3248f7a77b7ec3a3a12fbd8",
+                "shasum": ""
+            },
+            "require": {
+                "apirone/apirone-api-php": "^1.0",
+                "apirone/php-qr-code": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Apirone\\SDK\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "alex",
+                    "email": "alex.zaytseff@gmail.com"
+                }
+            ],
+            "description": "Apirone SDK",
+            "homepage": "https://github.com/Apirone/apirone-sdk-php",
+            "keywords": [
+                "Apirone",
+                "DOGE",
+                "api",
+                "bch",
+                "bitcoin",
+                "btc",
+                "crypto",
+                "cryptocurrency",
+                "ltc",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/Apirone/apirone-sdk-php/issues",
+                "source": "https://github.com/Apirone/apirone-sdk-php/tree/1.1.2"
+            },
+            "time": "2024-08-02T11:38:54+00:00"
+        },
+        {
+            "name": "apirone/php-qr-code",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Apirone/php-qr-code.git",
+                "reference": "cfd206723e25c047ea3c182e09b0f987935c17f0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Apirone/php-qr-code/zipball/cfd206723e25c047ea3c182e09b0f987935c17f0",
+                "reference": "cfd206723e25c047ea3c182e09b0f987935c17f0",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Apirone\\Lib\\PhpQRCode\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Zaytseff",
+                    "email": "alex.zaytseff@gmail.com"
+                }
+            ],
+            "description": "Generate QR-codes from a single PHP file.",
+            "homepage": "https://github.com/apirone/php-qr-code/",
+            "support": {
+                "source": "https://github.com/Apirone/php-qr-code/tree/1.0.0"
+            },
+            "time": "2024-01-19T07:36:49+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}

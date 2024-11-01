@@ -1,0 +1,5 @@
+{
+    "require": {
+        "apirone/apirone-sdk-php": "^1.1"
+    }
+}
