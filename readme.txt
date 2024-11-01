@@ -2,14 +2,14 @@
 
 Contributors: zaytseff
 Tags: accept, bitcoin, litecoin, usdt, crypto
-Stable tag: 1.2.10
+Stable tag: 2.0.0
 Requires PHP: 7.4
-Tested up to: 6.5
+Tested up to: 6.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 WooCommerce plugin - Multi CryptoCurrency Payments
-Requires at least WooCommerce: 6.0 Tested up to: 8.7.0 License: GPLv2 or later
+Requires at least WooCommerce: 6.0 Tested up to: 9.3.3 License: GPLv2 or later
 
 == Description ==
 Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.
