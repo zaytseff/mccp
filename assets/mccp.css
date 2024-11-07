@@ -3,6 +3,10 @@
     min-height: unset;
     flex-direction: column;
 }
+.invoice-wrapper >.invoice * {
+    box-sizing: content-box;
+}
+
 .invoice-wrapper > .woocommerce-order {
     width: 100%;
 }
