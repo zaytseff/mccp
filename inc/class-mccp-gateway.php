@@ -259,15 +259,6 @@ class WC_MCCP extends WC_Payment_Gateway
             $redirect = add_query_arg(['invoice' => $invoice->invoice], $order->get_checkout_payment_url(true));
         }
         return ['result' => 'success', 'redirect' => $redirect];
-
-        // // pa([$_GET, $_POST]);
-        // pa($coin);
-        // // pa($order);
-        // die();
-        // return array(
-        //     'result'    => 'success',
-        //     'redirect'  => $redirect,
-        // );
     }
 
     public function process_admin_options()
@@ -677,15 +668,41 @@ class WC_MCCP extends WC_Payment_Gateway
         delete_option('woocommerce_mccp_secret');
         $this->init_settings();
     }
-    public function callback_handler() {
+    public function callback_handler() 
+    {
+        $this->callback_check();
+
         $order_handler = static function($invoice) {
             WC_MCCP::order_status_update($invoice);
         };
+
         echo Invoice::callbackHandler($order_handler);
         exit;
     }
 
-    public static function order_status_update($invoice = null, $order = null) {
+    private function callback_check()
+    {
+        $secret = isset($_GET['id']) ? sanitize_text_field($_GET['id']) : null;
+        $data = file_get_contents('php://input');
+        $data = ($data) ? json_decode(Utils::sanitize($data)) : new \stdClass;
+        $invoice_id = $data->invoice ?? null; 
+
+        if ($invoice_id) {
+            $invoice = Invoice::getInvoice($invoice_id);
+            $order = new WC_Order($invoice->order);
+
+            if ($secret == md5($cart->id . $cart->secure_key)) {
+                return;
+            }
+        }
+
+        $message = sprintf($this->l('Secret %s not valid for invoice %s'), $secret, $invoice ? $invoice->invoice : 'is null');
+        Utils::send_json($message, 400);
+        exit;
+    }
+
+    public static function order_status_update($invoice = null, $order = null)
+    {
         if ($invoice == null) {
             return;
         }
@@ -709,7 +726,8 @@ class WC_MCCP extends WC_Payment_Gateway
         return;    
     }
 
-    public static function order_status_by_invoice($invoice) {
+    public static function order_status_by_invoice($invoice)
+    {
         $statuses = [
             'created'   => 'pending',
             'partpaid'  => 'pending',
@@ -722,7 +740,8 @@ class WC_MCCP extends WC_Payment_Gateway
         return $statuses[$invoice->status];
     }
 
-    public function render_handler() {
+    public function render_handler()
+    {
         if (Render::isAjaxRequest()) {
             $data = file_get_contents('php://input');
             $params = ($data) ? json_decode(Utils::sanitize($data)) : null;
