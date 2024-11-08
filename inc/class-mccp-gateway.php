@@ -84,68 +84,23 @@ class WC_MCCP extends WC_Payment_Gateway
 
     public function invoice_receipt($order_id)
     {
-        echo Invoice::renderLoader();
-        return;
-
-        $message_wrapper = function ($message) {
-            echo '<div class="receipt_info">' . esc_html( $message ) . '</div>';
-            return;
-        };
-        $invoice_id =  isset($_GET[Render::$idParam]) ? sanitize_text_field($_GET[Render::$idParam]) : false;
-        if ($invoice_id) {
-            // pa($invoice_id);
-            echo Invoice::renderLoader();
-            return;
-        }
-        $crypto = array_key_exists('mccp_currency', $_GET) ? sanitize_text_field($_GET['mccp_currency']) : false;
-        
-        if ( false === $this->is_available() ) {
-            return $message_wrapper(__('Payment method disabled', 'mccp'));
-        }
-        if ( false === $crypto) {
-            return $message_wrapper(__('Required param not exists', 'mccp'));
-        }
-        if ( false === array_key_exists($crypto, $this->get_available_coins()) ) {
-            return $message_wrapper(__(sprintf('Currency \'%s\' is not supported', $crypto), 'mccp'));
-        }
         $order = new WC_Order($order_id);
-        $coin = $this->options->getCurrency($crypto);
-
         $invoice = Invoice::getOrderInvoices($order_id)[0] ?? null;
-        $repayment = isset($_GET['repayment']) ? true : false;
-        
-        if ($invoice) {
-            if (!Render::isAjaxRequest()) {
-                $invoice->update();
-            }
-            // $invoice->update();
-            if ($repayment) {
-                $new = null;
-                // Create new invoice if expired;
-                if ($invoice->status == 'expired' && $order->get_status() === 'failed') {
-                    $new = $this->invoice_create($order, $coin);
-                }
-                // Create new invoice if total or currency changed (invoice not expired)
-                if (in_array($invoice->status, ['created', 'partpaid']) && $invoice->details->currency != $coin->abbr) {
-                    $new = $this->invoice_create($order, $coin);
-                }
-                if ($new) {
-                    // wp_redirect(add_query_arg(['mccp_currency' => $crypto], $order->get_checkout_payment_url(true)));
-                    wp_redirect(add_query_arg(['invoice' => $new->invoice], $order->get_checkout_payment_url(true)));
-                    exit();
-                }
-            }
-        }
+        $invoice_id = isset($_GET['invoice']) ? sanitize_text_field($_GET['invoice']) : null;
 
-        $invoice = $this->invoice_create($order, $coin);
-
-        if ($invoice) {
-            wp_redirect(add_query_arg(['invoice' => $invoice->invoice], $order->get_checkout_payment_url(true)));
-            exit();
+        if($invoice) {
+            if ($invoice->invoice == $invoice_id) {            
+                echo Invoice::renderLoader();
+            }
+            else {
+                wp_redirect(add_query_arg(['invoice' => $invoice->invoice], $order->get_checkout_payment_url(true)));
+                exit();
+            }
+            return;
         }
         ?>
-        <h2>Oops! Something went wrong.</h2>
-        <p>Please, try again or choose another payment method.</p>
+        <h2><?php __('Oops! Something went wrong.', 'mccp'); ?></h2>
+        <p><?php __('Please, try again or choose another payment method.', 'mccp'); ?></p>
         <p><a href="<?php echo esc_url( $order->get_checkout_payment_url() ); ?>" class="button pay"><?php esc_html_e( 'Pay', 'woocommerce' ); ?></a></p>
         <?php
     }
@@ -777,6 +732,9 @@ class WC_MCCP extends WC_Payment_Gateway
                 $offset = property_exists($params, 'offset') ? (int) $params->offset : 0;
                 header("Content-Type: text/plain");
                 $invoice = Invoice::getInvoice($id);
+                if ($invoice->details->isExpired()) {
+                    $invoice->update();
+                }
                 if ($offset) {
                     Render::setTimeZoneByOffset($offset);
                     echo $invoice->render();
@@ -790,6 +748,7 @@ class WC_MCCP extends WC_Payment_Gateway
                     }
                 }
                 else {
+
                     echo $invoice->id ? $invoice->details->statusNum() : 0;
                 }
             }
