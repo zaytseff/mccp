@@ -685,18 +685,18 @@ class WC_MCCP extends WC_Payment_Gateway
         $secret = isset($_GET['id']) ? sanitize_text_field($_GET['id']) : null;
         $data = file_get_contents('php://input');
         $data = ($data) ? json_decode(Utils::sanitize($data)) : new \stdClass;
-        $invoice_id = $data->invoice ?? null; 
+        $invoice = $data->invoice ?? null; 
 
-        if ($invoice_id) {
-            $invoice = Invoice::getInvoice($invoice_id);
+        if ($invoice) {
+            $invoice = Invoice::getInvoice($invoice);
             $order = new WC_Order($invoice->order);
 
-            if ($secret == md5($cart->id . $cart->secure_key)) {
+            if ($secret == md5($this->get_option('secret') . $order->get_order_key())) {
                 return;
             }
         }
 
-        $message = sprintf($this->l('Secret %s not valid for invoice %s'), $secret, $invoice ? $invoice->invoice : 'is null');
+        $message = sprintf(__('Secret %s not valid for invoice %s'), $secret, $invoice ? $invoice->invoice : 'is null');
         Utils::send_json($message, 400);
         exit;
     }
