@@ -156,8 +156,11 @@ class WC_MCCP extends WC_Payment_Gateway
         <select id="mccp_currency" name="mccp_currency">
         <?php foreach ( $coins as $coin ) : ?>
             <option value="<?php echo esc_html($coin->getAbbr()); ?>">
-                <?php echo esc_html($coin->getName()); ?>:
-                <?php echo esc_html(Utils::exp2dec(Utils::fiat2crypto($total, $woo_currency, $coin->getAbbr()))); ?>
+                <?php echo esc_html($coin->name); ?>:
+                <?php
+                    $sum = Utils::cur2min(Utils::fiat2crypto($total, $woo_currency, $coin->getAbbr()), $coin->unitsFactor);
+                    echo esc_html(Utils::humanizeAmount($sum, $coin)); 
+                ?>
             </option>
             <?php endforeach; ?>
         </select>
@@ -535,7 +538,7 @@ class WC_MCCP extends WC_Payment_Gateway
                     echo '<hr />';
                     echo sprintf(__('<div>Address: <b>%s</b></div>', 'mccp'), $invoice->details->address);
                     echo sprintf(__('<div>Created: <b>%s</b></div>', 'mccp'), get_date_from_gmt($invoice->details->created, 'd.m.Y H:i:s'));
-                    echo sprintf(__('<div>Amount: <b>%s %s</b></div>', 'mccp'), Utils::min2cur($invoice->details->amount, $currency->{'units-factor'}), strtoupper($invoice->details->currency));
+                    echo sprintf(__('<div>Amount: <b>%s %s</b></div>', 'mccp'), Utils::humanizeAmount($invoice->details->amount, $currency), strtoupper($invoice->details->currency));
                     echo sprintf(__('<div>Status: <b>%s</b></div>', 'mccp'), $invoice->status);
                     foreach ($invoice->details->history as $item) {
                         $status = property_exists($item, 'txid') ? ' <a class="address-link" href="' . Utils::getTransactionLink($currency, $item->txid) . '" target="_blank">' . $item->status . '</a>' : $item->status;
