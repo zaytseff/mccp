@@ -750,27 +750,25 @@ class WC_MCCP extends WC_Payment_Gateway
 
             if ($params) {
                 $id = property_exists($params, 'invoice') ? (string) $params->invoice : '';
-                $offset = property_exists($params, 'offset') ? (int) $params->offset : 0;
+                $offset = property_exists($params, 'offset') ? (int) $params->offset : null;
                 header("Content-Type: text/plain");
                 $invoice = Invoice::getInvoice($id);
                 if ($invoice->details->isExpired()) {
                     $invoice->update();
                 }
-                if ($offset) {
-                    Render::setTimeZoneByOffset($offset);
-                    echo $invoice->render();
-                    $order = new WC_Order($invoice->order);
-
-                    if ($invoice->status == 'expired' && $order->get_status() === 'pending') {
-                        WC_MCCP::order_status_update($invoice, $order);
-                    }
-                    if ($invoice->status == 'expired' && $order->get_status() === 'failed') {
-                        wc_get_template( 'checkout/thankyou.php', array( 'order' => $order ) );
-                    }
-                }
-                else {
-
+                if ($offset === null) {
                     echo $invoice->id ? $invoice->details->statusNum() : 0;
+                    exit;
+                }
+                Render::setTimeZoneByOffset($offset);
+                echo $invoice->render();
+                $order = new WC_Order($invoice->order);
+
+                if ($invoice->status == 'expired' && $order->get_status() === 'pending') {
+                    WC_MCCP::order_status_update($invoice, $order);
+                }
+                if ($invoice->status == 'expired' && $order->get_status() === 'failed') {
+                    wc_get_template( 'checkout/thankyou.php', array( 'order' => $order ) );
                 }
             }
             exit;
