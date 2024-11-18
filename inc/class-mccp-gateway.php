@@ -32,7 +32,7 @@ class WC_MCCP extends WC_Payment_Gateway
         add_action('woocommerce_api_mccp_check', array($this, 'render_handler'));
 
         add_action('woocommerce_update_options_payment_gateways_mccp', array($this, 'process_admin_options'));
-        add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'show_invoice_admin_info'));
+        add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'show_invoice_info'));
         
         Invoice::dataUrl(site_url() . '/?wc-api=mccp_check');
     }
@@ -527,7 +527,7 @@ class WC_MCCP extends WC_Payment_Gateway
         return ($v == null) ? [] : $v;
     }
 
-    public function show_invoice_admin_info($order)
+    public function show_invoice_info($order)
     {
         if (is_admin() && $order->payment_method == 'mccp') {
             echo '<h3>' . __('Payment details', 'mccp') . '</h3>';
@@ -541,7 +541,7 @@ class WC_MCCP extends WC_Payment_Gateway
                     echo sprintf(__('<div>Amount: <b>%s %s</b></div>', 'mccp'), Utils::humanizeAmount($invoice->details->amount, $currency), strtoupper($invoice->details->currency));
                     echo sprintf(__('<div>Status: <b>%s</b></div>', 'mccp'), $invoice->status);
                     foreach ($invoice->details->history as $item) {
-                        $status = property_exists($item, 'txid') ? ' <a class="address-link" href="' . Utils::getTransactionLink($currency, $item->txid) . '" target="_blank">' . $item->status . '</a>' : $item->status;
+                        $status = $item->txid !== null ? ' <a class="address-link" href="' . Utils::getTransactionLink($currency, $item->txid) . '" target="_blank">' . $item->status . '</a>' : $item->status;
                         echo '<div>- <i>' . get_date_from_gmt($item->date, 'd.m.Y H:i:s') . '</i> <b>' . $status . '</b></div>';
                     }
                 }
