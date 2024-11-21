@@ -76,11 +76,21 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
+### Version 2.0.1 | 20/11/2024 =
+
+* Fixed render ajax response when offset exists and is zero
+* SDK updated to version 1.1.6:
+    * Isolated styles from sdk root element
+    * Clear unused styles & code cleanup
+    * Minimized styles assets
+    * Added mobile view for address strings & mobile styles improved
+    * JS updated
+  
 ### Version 2.0.0 | 01/11/2024 =
 
 * Started using the official Apirone SDK PHP library
 * New official Apirone invoice design
-* Splitted networks & tokens on the plugin settings page
+* Split networks & tokens on the plugin settings page
 * Fixed the "lost merchant address" bug for TRON network & tokens
 
 ## Changelog

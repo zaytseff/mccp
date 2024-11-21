@@ -2,14 +2,13 @@
 
 Contributors: zaytseff
 Tags: accept, bitcoin, litecoin, usdt, crypto
-Stable tag: 2.0.0
 Requires PHP: 7.4
-Tested up to: 6.6
+Tested up to: 6.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 WooCommerce plugin - Multi CryptoCurrency Payments
-Requires at least WooCommerce: 6.0 Tested up to: 9.3.3 License: GPLv2 or later
+Requires at least WooCommerce: 6.0 Tested up to: 9.4.2 License: GPLv2 or later
 
 == Description ==
 Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.
@@ -76,6 +75,15 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 
 == Changelog ==
+
+= Version 2.0.1 | 20/11/2024 =
+- Fixed render ajax response when offset exists and is zero
+- SDK updated to version 1.1.6:
+    - Isolated styles from sdk root element
+    - Clear unused styles & code cleanup
+    - Minimized styles assets
+    - Added mobile view for address strings & mobile styles improved
+    - JS updated
 
 = Version 2.0.0 | 01/11/2024 =
 - Started using the official Apirone SDK PHP library

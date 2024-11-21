@@ -567,6 +567,13 @@ class WC_MCCP extends WC_Payment_Gateway
             return;
         }
 
+        // Up from 2.0.0 and above
+        if(version_compare($version, '2.0.0', '>=')) {
+            $settings['version'] = $code_version;
+            update_option('woocommerce_mccp_settings', $settings, true);
+            return;
+        }
+
         // Up to 2.0.0 - Migrate to SDK
         $account = get_option('woocommerce_mccp_account', null);
         $options = ($account) ? Options::fromJson($account) : Options::init()->createAccount();
