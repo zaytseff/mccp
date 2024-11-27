@@ -92,6 +92,9 @@ input[type="checkbox"].currency-enabled {
 .mccp-settings select {
 	width: 400px !important;
 }
+.mccp-settings input.regular-input.error{
+    border-color: red;
+}
 
 .mccp-settings .testnet-info {
 	color: #888;

@@ -483,9 +483,9 @@ class WC_MCCP extends WC_Payment_Gateway
                                     </label>
                                 </th>
                                 <td class="forminp">
-                                    <input type="text" name="woocommerce_mccp_networks[<?php echo esc_html( $network->getAbbr() ); ?>]" class="input-text regular-input" value="<?php echo esc_html( $network->getAddress() ); ?>">
+                                    <input type="text" name="woocommerce_mccp_networks[<?php echo esc_html( $network->getAbbr() ); ?>]" class="input-text regular-input<?php echo $network->hasError() ? ' error' : '' ;?>" value="<?php echo esc_html( $network->getAddress() ); ?>">
 
-                                    <?php  if ($tokens && $network->getAddress()) : ?>
+                                    <?php  if ($tokens) : ?>
                                         <div class="tokens_wrapper">
                                         <?php $tokens = array_merge([$network], $tokens); ?>
                                             <?php foreach ($tokens as $token) : ?>
