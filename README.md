@@ -2,9 +2,13 @@
 
 ## Description
 
-Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.
+Accept the most popular cryptocurrencies on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.
 
-[Watch on YouTUBE](https://www.youtube.com/watch?v=SKvp_K_FdDU)
+**Watch on YouTUBe**
+
+[Install process](https://www.youtube.com/watch?v=evauShnffmk)
+|
+[Payment process](https://www.youtube.com/watch?v=rZjs7u6iK7U)
 
 **Key features:**
 
@@ -23,16 +27,30 @@ Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your stor
 ## How does it work?
 
 The Buyer adds items into the cart and prepares the order.
-Using API requests, the store generates temporary crypto (BTC, LTC, BCH, Doge) address and show a QR code.
+Using API requests, the store generates temporary crypto address and show a QR code.
 Then, the buyer scans the QR code and pays for the order. This transaction goes to the blockchain.
 The payment gateway immediately notifies the store about the payment.
 The store completes the transaction.
+
+## Supported currencies
+
+* Bitcoin
+* Bitcoin (testnet)<sup>1</sup>
+* Litecoin
+* Bitcoin Cash
+* Dogecoin
+* TRON
+* Tether USD (TRC20)
+* USD Coin (TRC20)
+  
+    ---
+    <sup>1</sup> - For testing only.
 
 ## Installation via WordPress Plugin Manager
 
 * Go to WordPress Admin panel > Plugins > Add New in the admin panel.
 
-* Enter "Multi CryptoCurrency Payments" in the search box.
+* Enter "Multi CryptoCurrency Payments" or "Apirone" in the search box.
 
 * Click Install Now.
 
@@ -57,7 +75,7 @@ ___
 
 **I will get money in USD, EUR, CAD, JPY, RUR...?**
 
->No. You will get crypto only. You can enter the crypto address of your trading platform account and convert crypto (BTC, LTC, BCH, Doge) to fiat money at any time.
+>No. You will get crypto only. You can enter the crypto address of your trading platform account and convert crypto to fiat money at any time.
 
 **How can The Store cancel orders and return bitcoins?**
 > This process is fully manual because you will get all payments to your specified wallet. Only you control your money. Contact the Customer, ask address and finish the deal.
@@ -76,16 +94,17 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
-### Version 2.0.1 | 20/11/2024 =
+### Version 2.0.1 | 28/11/2024 =
 
-* Fixed render ajax response when offset exists and is zero
+* Fixed render ajax response in the checkout page when offset exists and is zero
+* Updated the interface for addresses of Tron tokens on the settings page
 * SDK updated to version 1.1.6:
     * Isolated styles from sdk root element
     * Clear unused styles & code cleanup
     * Minimized styles assets
     * Added mobile view for address strings & mobile styles improved
     * JS updated
-  
+
 ### Version 2.0.0 | 01/11/2024 =
 
 * Started using the official Apirone SDK PHP library
@@ -97,7 +116,7 @@ Cancel and return the rest amount directly to the customers.
 
 ### Version 1.2.10 | 11/07/2024 =
 
-* Show tbts to unauthenticated users if test_customer is set to ```*``` (asterisk symbol)
+* Show tbtc to unauthenticated users if test_customer is set to ```*``` (asterisk symbol)
 
 ### Version 1.2.9 | 04/04/2024
 

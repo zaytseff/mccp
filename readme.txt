@@ -2,6 +2,7 @@
 
 Contributors: zaytseff
 Tags: accept, bitcoin, litecoin, usdt, crypto
+Requires at least: 5.6
 Requires PHP: 7.4
 Tested up to: 6.7
 License: GPLv2 or later
@@ -13,7 +14,7 @@ Requires at least WooCommerce: 6.0 Tested up to: 9.4.2 License: GPLv2 or later
 == Description ==
 Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.
 
-https://www.youtube.com/watch?v=SKvp_K_FdDU
+https://www.youtube.com/watch?v=evauShnffmk
 
 **Key features:**
 
@@ -32,6 +33,16 @@ Then, the buyer scans the QR code and pays for the order. This transaction goes 
 The payment gateway immediately notifies the store about the payment.
 The store completes the transaction.
 
+== Supported currencies ==
+* Bitcoin
+* Bitcoin (testnet)
+* Litecoin
+* Bitcoin Cash
+* Dogecoin
+* TRON
+* Tether USD (TRC20)
+* USD Coin (TRC20)
+  
 == Installation via WordPress Plugin Manager ==
 Go to WordPress Admin panel > Plugins > Add New in the admin panel.
 Enter "Multi CryptoCurrency Payments" in the search box.
@@ -69,15 +80,13 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 3. Install step 3
 4. Install step 4
 5. Install step 5
-6. Install step 6
-7. Install step 7
-8. Install step 8
 
 
 == Changelog ==
 
-= Version 2.0.1 | 20/11/2024 =
-- Fixed render ajax response when offset exists and is zero
+= Version 2.0.1 | 28/11/2024 =
+- Fixed render ajax response in the checkout page when offset exists and is zero
+- Updated the interface for addresses of Tron tokens on the settings page
 - SDK updated to version 1.1.6:
     - Isolated styles from sdk root element
     - Clear unused styles & code cleanup
@@ -88,7 +97,7 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 = Version 2.0.0 | 01/11/2024 =
 - Started using the official Apirone SDK PHP library
 - New official Apirone invoice design
-- Splitted networks & tokens on the plugin settings page
+- Split networks and tokens on the plugin settings page
 - Fixed the "lost merchant address" bug for TRON network & tokens
 
 = Version 1.2.10 | 11/07/2024 =
