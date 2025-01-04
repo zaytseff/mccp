@@ -94,6 +94,10 @@ Cancel and return the rest amount directly to the customers.
 
 ## Changelog
 
+### Version 2.0.2 | 04/01/2025 =
+
+* Changed get_footer hook to wp_enqueue_scripts hook
+
 ### Version 2.0.1 | 28/11/2024 =
 
 * Fixed render ajax response in the checkout page when offset exists and is zero

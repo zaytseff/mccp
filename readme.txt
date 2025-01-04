@@ -9,7 +9,7 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 WooCommerce plugin - Multi CryptoCurrency Payments
-Requires at least WooCommerce: 6.0 Tested up to: 9.4.2 License: GPLv2 or later
+Requires at least WooCommerce: 6.0 Tested up to: 9.5.1 License: GPLv2 or later
 
 == Description ==
 Accept the most popular cryptocurrencies (BTC, LTC, BCH, Doge etc.) on your store all around the world. Use any crypto supported by provider to accept coins using the Forwarding payment process.
@@ -83,6 +83,9 @@ The plugin uses the free Rest API of the Apirone crypto payment gateway. The pri
 
 
 == Changelog ==
+
+= Version 2.0.2 | 04/01/2025 =
+- Changed get_footer hook to wp_enqueue_scripts hook
 
 = Version 2.0.1 | 28/11/2024 =
 - Fixed render ajax response in the checkout page when offset exists and is zero
